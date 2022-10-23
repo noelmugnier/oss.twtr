@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>OSS.Twtr.AccountManagement</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\OSS.Twtr.Application\OSS.Twtr.Application.csproj" />
+      <ProjectReference Include="..\OSS.Twtr.Infrastructure\OSS.Twtr.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FastEndpoints" Version="5.1.0" />
+      <PackageReference Include="FluentMigrator" Version="3.3.2" />
+      <PackageReference Include="linq2db.AspNet" Version="4.3.0" />
+      <PackageReference Include="linq2db.SQLite" Version="4.3.0" />
+      <PackageReference Include="Mapster" Version="7.3.0" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\OSS.Twtr.Application\OSS.Twtr.Application.csproj" />
+      <ProjectReference Include="..\OSS.Twtr.Core\OSS.Twtr.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FastEndpoints" Version="5.1.0" />
+      <PackageReference Include="FastEndpoints.Swagger" Version="5.1.0" />
+      <PackageReference Include="FluentMigrator" Version="3.3.2" />
+      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.2.2" />
+      <PackageReference Include="linq2db" Version="4.3.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.AspNetCore">
+        <HintPath>C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\6.0.10\Microsoft.AspNetCore.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+</Project>
