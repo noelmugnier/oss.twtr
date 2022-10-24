@@ -4,11 +4,11 @@ using FastEndpoints.Swagger;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using OSS.Twtr.Application;
-using OSS.Twtr.Domain.Services;
-using OSS.Twtr.Infrastructure.Services;
+using OSS.Twtr.Domain;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace OSS.Twtr.Infrastructure;
 
 public static class InfrastructureDependenciesInjection
 {

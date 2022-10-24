@@ -8,9 +8,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\OSS.Twtr.IdentityManagement\OSS.Twtr.IdentityManagement.csproj" />
+      <ProjectReference Include="..\Identity\OSS.Twtr.Identity.Infrastructure\OSS.Twtr.Identity.Infrastructure.csproj" />
+      <ProjectReference Include="..\Management\OSS.Twtr.Management.Infrastructure\OSS.Twtr.Management.Infrastructure.csproj" />
       <ProjectReference Include="..\OSS.Twtr.Infrastructure\OSS.Twtr.Infrastructure.csproj" />
-      <ProjectReference Include="..\OSS.Twtr.DataManagement\OSS.Twtr.DataManagement.csproj" />
     </ItemGroup>
 
 </Project>

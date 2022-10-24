@@ -1,4 +1,4 @@
-﻿namespace OSS.Twtr.Domain.Ids;
+﻿namespace OSS.Twtr.Domain;
 
 public record struct TweetId()
 {

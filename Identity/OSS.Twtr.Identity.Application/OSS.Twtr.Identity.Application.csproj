@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\OSS.Twtr.Application\OSS.Twtr.Application.csproj" />
+      <ProjectReference Include="..\OSS.Twtr.Identity.Domain\OSS.Twtr.Identity.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Events" />
+      <Folder Include="Queries" />
+    </ItemGroup>
+
+</Project>
