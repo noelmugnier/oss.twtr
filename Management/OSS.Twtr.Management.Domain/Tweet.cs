@@ -16,10 +16,12 @@ public class Tweet : Entity
         Message = message;
         PostedOn = postedOn;
         User = user;
+        UserId = user.Id;
     }
 
     public TweetId Id { get; }
     public string Message { get; }
     public DateTimeOffset PostedOn { get; }
+    public UserId UserId { get; }
     public User User { get; }
 }

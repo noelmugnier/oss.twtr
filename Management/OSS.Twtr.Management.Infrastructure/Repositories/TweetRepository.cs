@@ -15,26 +15,26 @@ public class TweetRepository : Repository<DataDbConnection, TweetEntity>, ITweet
     {
     }
 
-    public Task<TweetDto> Get(TweetId id, CancellationToken token)
+    public Task<T> Get<T>(ISpecification<TweetDto, T> specification, CancellationToken token)
     {
         var query =
             from t in Table
             join u in GetTable<UserEntity>() on t.UserId equals u.Id
-            where t.Id == id.Value
             select new TweetDto(t.Id, t.Message, t.PostedOn, new UserDto(u.Id, u.UserName, u.DisplayName));
-        
-        return query.SingleAsync(token);
+
+        var result = specification.SatisfyingElementsFrom(query);
+        return result.SingleAsync(token);
     }
 
-    public async Task<IEnumerable<TweetDto>> Get(UserId userId, CancellationToken token)
+    public async Task<IEnumerable<T>> Get<T>(IListSpecification<TweetDto, T> specification, CancellationToken token)
     {
         var query =
             from t in Table
             join u in GetTable<UserEntity>() on t.UserId equals u.Id 
-            where u.Id == userId.Value
             select new TweetDto(t.Id, t.Message, t.PostedOn, new UserDto(u.Id, u.UserName, u.DisplayName));
 
-        return await query.ToListAsync(token);
+        var result = specification.SatisfyingElementsFrom(query);
+        return await result.ToListAsync(token);
     }
 
     public void Add(Tweet entity)

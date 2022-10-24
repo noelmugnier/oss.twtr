@@ -5,9 +5,8 @@ namespace OSS.Twtr.Management.Domain.Repositories;
 
 public interface ITweetRepository
 {
-    Task<TweetDto> Get(TweetId id, CancellationToken token);
-    Task<IEnumerable<TweetDto>> Get(UserId userId, CancellationToken token);
+    Task<T> Get<T>(ISpecification<TweetDto, T> id, CancellationToken token);
+    Task<IEnumerable<T>> Get<T>(IListSpecification<TweetDto, T> id, CancellationToken token);
     void Add(Tweet entity);
-    void Update(Tweet entity);
     void Delete(Tweet entity);
 }

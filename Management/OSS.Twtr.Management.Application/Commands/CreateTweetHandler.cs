@@ -3,6 +3,7 @@ using OSS.Twtr.Application;
 using OSS.Twtr.Domain;
 using OSS.Twtr.Management.Domain;
 using OSS.Twtr.Management.Domain.Contracts;
+using OSS.Twtr.Management.Domain.Specifications;
 
 namespace OSS.Twtr.Management.Application.Commands;
 
@@ -23,7 +24,7 @@ public class CreateTweetHandler : ICommandHandler<CreateTweetCommand, Result<Twe
         _db.Tweets.Add(tweet);
         var result = await _db.SaveChanges(ct);
 
-        var dto = await _db.Tweets.Get(tweet.Id, ct);
+        var dto = await _db.Tweets.Get(new GetTweetById(tweet.Id), ct);
         return result.On<Result<TweetDto>>(success => new(dto), errors => new(errors));
     }
 }

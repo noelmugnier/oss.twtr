@@ -3,6 +3,7 @@ using OSS.Twtr.Application;
 using OSS.Twtr.Domain;
 using OSS.Twtr.Management.Domain.Contracts;
 using OSS.Twtr.Management.Domain.Repositories;
+using OSS.Twtr.Management.Domain.Specifications;
 
 namespace OSS.Twtr.Management.Application.Queries;
 
@@ -17,7 +18,7 @@ public class GetTweetHandler : IQueryHandler<GetTweetQuery, Result<TweetDto>>
 
     public async Task<Result<TweetDto>> Handle(GetTweetQuery request, CancellationToken ct)
     {
-        var tweet = await _tweetRepository.Get(TweetId.From(request.TweetId), ct);
+        var tweet = await _tweetRepository.Get(new GetTweetById(TweetId.From(request.TweetId)), ct);
         return new Result<TweetDto>(tweet);
     }
 }
