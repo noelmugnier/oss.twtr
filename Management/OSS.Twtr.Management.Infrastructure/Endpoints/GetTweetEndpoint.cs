@@ -3,6 +3,7 @@ using FluentValidation;
 using Mapster;
 using MediatR;
 using OSS.Twtr.Management.Application.Queries;
+using OSS.Twtr.Management.Domain.Contracts;
 
 namespace OSS.Twtr.Management.Infrastructure.Endpoints;
 
@@ -39,4 +40,5 @@ public record GetTweetRequest
     public Guid TweetId { get; init; }
 }
 
-public record struct GetTweetResponse(Guid Id, string UserName, string DisplayName, string Message, DateTimeOffset PostedOn);
+public record struct GetTweetResponse(Guid Id, string Message, DateTimeOffset PostedOn, GetTweetUserResponse User);
+public record struct GetTweetUserResponse(Guid Id, string UserName, string DisplayName);

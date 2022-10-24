@@ -9,7 +9,9 @@
     <ItemGroup>
       <PackageReference Include="FastEndpoints" Version="5.1.0" />
       <PackageReference Include="FluentMigrator.Runner" Version="3.3.2" />
+      <PackageReference Include="FluentMigrator.Runner.SQLite" Version="3.3.2" />
       <PackageReference Include="linq2db.AspNet" Version="4.3.0" />
+      <PackageReference Include="linq2db.SQLite" Version="4.3.0" />
       <PackageReference Include="Mapster" Version="7.3.0" />
       <PackageReference Include="MediatR" Version="11.0.0" />
     </ItemGroup>

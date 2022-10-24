@@ -24,7 +24,6 @@ public class CreateTweetHandler : ICommandHandler<CreateTweetCommand, Result<Twe
         var result = await _db.SaveChanges(ct);
 
         var dto = await _db.Tweets.Get(tweet.Id, ct);
-        
         return result.On<Result<TweetDto>>(success => new(dto), errors => new(errors));
     }
 }
