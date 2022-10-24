@@ -1,7 +1,6 @@
 ﻿using LinqToDB;
 using LinqToDB.Data;
 using OSS.Twtr.Application;
-using OSS.Twtr.Core;
 using OSS.Twtr.Domain;
 
 namespace OSS.Twtr.Infrastructure;

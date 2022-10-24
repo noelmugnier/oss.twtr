@@ -1,6 +1,6 @@
 using FluentValidation;
 using OSS.Twtr.Application;
-using OSS.Twtr.Core;
+using OSS.Twtr.Domain;
 using OSS.Twtr.Identity.Domain;
 using OSS.Twtr.Identity.Domain.Services;
 

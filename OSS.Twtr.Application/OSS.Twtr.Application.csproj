@@ -12,7 +12,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\OSS.Twtr.Core\OSS.Twtr.Core.csproj" />
       <ProjectReference Include="..\OSS.Twtr.Domain\OSS.Twtr.Domain.csproj" />
     </ItemGroup>
 

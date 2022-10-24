@@ -1,4 +1,4 @@
-﻿namespace OSS.Twtr.Core;
+﻿namespace OSS.Twtr.Domain;
 
 public record Result<TLeft> : Either<TLeft, IEnumerable<Error>>
 {
