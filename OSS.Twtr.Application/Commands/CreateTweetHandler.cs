@@ -18,7 +18,7 @@ public class CreateTweetHandler : ICommandHandler<CreateTweetCommand, Result<Twe
 
     public async Task<Result<TweetDto>> Handle(CreateTweetCommand request, CancellationToken ct)
     {
-        var user = await _db.Users.Get(UserId.From(request.UserId), ct);
+        var user = await _db.Users.Get((UserId)request.UserId, ct);
         var tweet = new Tweet(request.Message, user);
         
         _db.Tweets.Add(tweet);

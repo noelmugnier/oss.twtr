@@ -19,8 +19,8 @@ public class UserRepository : Repository<DataDbConnection, UserEntity>, IUserRep
     {
         var query =
             from t in Table
-            where t.Id == id.Value
-            select new User(UserId.From(t.Id), t.UserName, t.MemberSince, t.DisplayName);
+            where t.Id == id
+            select new User((UserId)t.Id, t.UserName, t.MemberSince, t.DisplayName);
 
         return query.SingleAsync(token);
     }
@@ -30,7 +30,7 @@ public class UserRepository : Repository<DataDbConnection, UserEntity>, IUserRep
         var query =
             from u in GetTable<UserEntity>()
             join t in GetTable<TweetEntity>() on u.Id equals t.UserId into te
-            where u.Id == id.Value
+            where u.Id == id
             select new UserProfileDto(u.Id, u.UserName, u.DisplayName, u.MemberSince, te.Select(t => new UserTweetDto(t.Id, t.Message, t.PostedOn)));
 
         return await query.SingleAsync(token);
@@ -39,12 +39,12 @@ public class UserRepository : Repository<DataDbConnection, UserEntity>, IUserRep
     public void Add(User entity)
     {
         Execute(ct => Table.InsertAsync(() => new UserEntity
-            {Id = entity.Id.Value, UserName = entity.UserName, DisplayName = entity.DisplayName, MemberSince = entity.MemberSince.DateTime}, ct), entity.DomainEvents);
+            {Id = entity.Id, UserName = entity.UserName, DisplayName = entity.DisplayName, MemberSince = entity.MemberSince.DateTime}, ct), entity.DomainEvents);
     }
 
     public void Delete(User entity)
     {
         Execute(ct => Table
-            .DeleteAsync(t => t.Id == entity.Id.Value, ct), entity.DomainEvents);
+            .DeleteAsync(t => t.Id == entity.Id, ct), entity.DomainEvents);
     }
 }

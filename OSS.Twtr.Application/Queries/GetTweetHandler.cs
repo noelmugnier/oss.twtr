@@ -18,7 +18,7 @@ public class GetTweetHandler : IQueryHandler<GetTweetQuery, Result<TweetDto>>
 
     public async Task<Result<TweetDto>> Handle(GetTweetQuery request, CancellationToken ct)
     {
-        var tweet = await _tweetRepository.Get(new GetTweetById(TweetId.From(request.TweetId)), ct);
+        var tweet = await _tweetRepository.Get(new GetTweetById((TweetId)request.TweetId), ct);
         return new Result<TweetDto>(tweet);
     }
 }

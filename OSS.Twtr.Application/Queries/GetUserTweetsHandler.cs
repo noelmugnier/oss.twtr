@@ -18,7 +18,7 @@ public class GetUserTweetsHandler : IQueryHandler<GetUserTweetsQuery, Result<IEn
 
     public async Task<Result<IEnumerable<UserTweetDto>>> Handle(GetUserTweetsQuery request, CancellationToken ct)
     {
-        var tweets = await _tweetRepository.GetAll(new GetUserTweetsSpecification(UserId.From(request.UserId), request.Page, request.Count), ct);
+        var tweets = await _tweetRepository.GetAll(new GetUserTweetsSpecification((UserId)request.UserId, request.Page, request.Count), ct);
         return new Result<IEnumerable<UserTweetDto>>(tweets);
     }
 }

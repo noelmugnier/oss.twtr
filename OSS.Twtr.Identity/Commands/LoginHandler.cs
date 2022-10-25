@@ -37,7 +37,7 @@ public class LoginHandler : ICommandHandler<LoginCommand, Result<AuthenticationR
         if(!passwordResult)
             return new Result<AuthenticationResultDto>(new Error("Invalid password"));
 
-        _eventDispatcher.Dispatch(new UserConnected(UserId.From(Guid.Parse(user.Id))));
+        _eventDispatcher.Dispatch(new UserConnected((UserId)user.Id));
         
         var claims = await _userManager.GetClaimsAsync(user);
         return new Result<AuthenticationResultDto>(new AuthenticationResultDto(user, claims, GenerateToken(user)));

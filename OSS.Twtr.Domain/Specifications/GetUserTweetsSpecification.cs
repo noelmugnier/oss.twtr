@@ -19,7 +19,7 @@ public class GetUserTweetsSpecification : Specification<TweetDto, UserTweetDto>
     public override IQueryable<UserTweetDto> SatisfyingElementsFrom(IQueryable<TweetDto> queryable)
     {
         return queryable
-            .Where(q => q.UserId == _userId.Value)
+            .Where(q => q.UserId == _userId)
             .Select(q => new UserTweetDto(q.Id, q.Message, q.PostedOn))
             .OrderByDescending(q => q.PostedOn)
             .Skip((_page-1)*_count)

@@ -14,6 +14,6 @@ public class GetTweetById : Specification<TweetDto>
 
     public override IQueryable<TweetDto> SatisfyingElementsFrom(IQueryable<TweetDto> candidates)
     {
-        return candidates.Where(q => q.Id == _tweetId.Value);
+        return candidates.Where(q => q.Id == _tweetId);
     }
 }

@@ -20,7 +20,7 @@ public class TweetRepository : Repository<DataDbConnection, TweetEntity>, ITweet
         var query =
             from t in Table
             join u in GetTable<UserEntity>() on t.UserId equals u.Id
-            select new TweetDto(t.Id, t.Message, t.PostedOn, new UserDto(u.Id, u.UserName, u.DisplayName));
+            select new TweetDto(t.Id, t.Message, t.PostedOn, u.Id, new UserDto(u.Id, u.UserName, u.DisplayName));
 
         var result = specification.SatisfyingElementsFrom(query);
         return result.SingleAsync(token);
@@ -31,7 +31,7 @@ public class TweetRepository : Repository<DataDbConnection, TweetEntity>, ITweet
         var query =
             from t in Table
             join u in GetTable<UserEntity>() on t.UserId equals u.Id 
-            select new TweetDto(t.Id, t.Message, t.PostedOn, new UserDto(u.Id, u.UserName, u.DisplayName));
+            select new TweetDto(t.Id, t.Message, t.PostedOn, u.Id, new UserDto(u.Id, u.UserName, u.DisplayName));
 
         var result = specification.SatisfyingElementsFrom(query);
         return await result.ToListAsync(token);
@@ -40,20 +40,12 @@ public class TweetRepository : Repository<DataDbConnection, TweetEntity>, ITweet
     public void Add(Tweet entity)
     {
         Execute(ct => Table.InsertAsync(() => new TweetEntity
-            {Id = entity.Id.Value, Message = entity.Message, UserId = entity.UserId.Value, PostedOn = entity.PostedOn.DateTime }, ct), entity.DomainEvents);
-    }
-
-    public void Update(Tweet entity)
-    {
-        Execute(ct => Table
-            .Where(t => t.Id == entity.Id.Value)
-            .Set(t => t.Message, entity.Message)
-            .UpdateAsync(ct), entity.DomainEvents);
+            {Id = entity.Id, Message = entity.Message, UserId = entity.UserId, PostedOn = entity.PostedOn.DateTime }, ct), entity.DomainEvents);
     }
 
     public void Delete(Tweet entity)
     {
         Execute(ct => Table
-            .DeleteAsync(t => t.Id == entity.Id.Value, ct), entity.DomainEvents);
+            .DeleteAsync(t => t.Id == entity.Id, ct), entity.DomainEvents);
     }
 }

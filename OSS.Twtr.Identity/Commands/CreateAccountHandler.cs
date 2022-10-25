@@ -24,12 +24,11 @@ public class CreateAccountHandler : ICommandHandler<CreateAccountCommand, Result
         var user = new IdentityUser(request.Username);
         var creationResult = await _userManager.CreateAsync(user, request.Password);
 
-        var userId = Guid.Parse(user.Id);
         if (!creationResult.Succeeded)
-            return new Result<AccountDto>(new AccountDto(userId, user.UserName));
+            return new Result<AccountDto>(creationResult.Errors.Select(e => new Error(e.Description, e.Code)));
 
-        _eventDispatcher.Dispatch(new AccountCreated(UserId.From(userId), user.UserName));
-        return new Result<AccountDto>(creationResult.Errors.Select(e => new Error(e.Description, e.Code)));
+        _eventDispatcher.Dispatch(new AccountCreated((UserId)user.Id, user.UserName));
+        return new Result<AccountDto>(new AccountDto(Guid.Parse(user.Id), user.UserName));
     }
 }
 

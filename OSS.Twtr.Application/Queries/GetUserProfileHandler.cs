@@ -17,7 +17,7 @@ public class GetUserProfileHandler : IQueryHandler<GetUserProfileQuery, Result<U
 
     public async Task<Result<UserProfileDto>> Handle(GetUserProfileQuery request, CancellationToken ct)
     {
-        var user = await _repository.GetUserProfile(UserId.From(request.UserId), ct);
+        var user = await _repository.GetUserProfile((UserId)request.UserId, ct);
         return new Result<UserProfileDto>(user);
     }
 }

@@ -16,7 +16,7 @@ public class CreateUserHandler : ICommandHandler<CreateUserCommand, Result<User>
 
     public async Task<Result<User>> Handle(CreateUserCommand request, CancellationToken ct)
     {
-        var user = new User(UserId.From(request.UserId), request.Username, request.CreatedOn);
+        var user = new User((UserId)request.UserId, request.Username, request.CreatedOn);
         _db.Users.Add(user);
         var result = await _db.SaveChanges(ct);
         

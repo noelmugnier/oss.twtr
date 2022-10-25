@@ -15,6 +15,6 @@ public class AccountCreatedHandler : IEventHandler<AccountCreated>
     }
     public async Task Handle(WrappedDomainEvent<AccountCreated> notification, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new CreateUserCommand(notification.DomainEvent.UserId.Value, notification.DomainEvent.UserName, notification.DomainEvent.RaisedOn), cancellationToken);
+        var result = await _mediator.Send(new CreateUserCommand(notification.DomainEvent.UserId, notification.DomainEvent.UserName, notification.DomainEvent.RaisedOn), cancellationToken);
     }
 }
