@@ -1,4 +1,4 @@
-﻿namespace OSS.Twtr.Domain;
+﻿namespace OSS.Twtr.Core;
 
 public record struct AccountId()
 {

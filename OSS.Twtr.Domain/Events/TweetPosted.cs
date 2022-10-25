@@ -1,3 +1,3 @@
-﻿namespace OSS.Twtr.Domain;
+﻿namespace OSS.Twtr.Core;
 
 public record TweetPosted(TweetId Id) : DomainEvent;

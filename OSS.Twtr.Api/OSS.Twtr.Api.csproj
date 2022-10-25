@@ -8,9 +8,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Identity\OSS.Twtr.Identity.Infrastructure\OSS.Twtr.Identity.Infrastructure.csproj" />
-      <ProjectReference Include="..\Management\OSS.Twtr.Management.Infrastructure\OSS.Twtr.Management.Infrastructure.csproj" />
+      <ProjectReference Include="..\OSS.Twtr.Identity\OSS.Twtr.Identity.csproj" />
       <ProjectReference Include="..\OSS.Twtr.Infrastructure\OSS.Twtr.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.10">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
     </ItemGroup>
 
 </Project>
