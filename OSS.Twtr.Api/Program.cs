@@ -1,15 +1,7 @@
-using OSS.Twtr.Identity;
 using OSS.Twtr.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services
-    .AddInfrastructure(builder.Configuration)
-    .AddIdentityFeature(builder.Configuration);
-
-var app = builder.Build();
-
-app.UseIdentityFeature()
-    .UseInfrastructure();
-
+var app = builder.Build().UseInfrastructure();
 app.Run();
