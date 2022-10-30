@@ -37,7 +37,7 @@ public sealed class CreateUserValidator : AbstractValidator<CreateUserCommand>
     {
         RuleFor(x => x.Username).NotEmpty().MinimumLength(4);
         RuleFor(x => x.Password).NotEmpty().MinimumLength(8);
-        RuleFor(x => x.Password).Equal(x => x.ConfirmPassword);
+        RuleFor(x => x.ConfirmPassword).Equal(x => x.Password);
     }
 }
 
