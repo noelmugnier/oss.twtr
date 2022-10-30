@@ -3,7 +3,7 @@ import { check } from 'k6';
 import exec from 'k6/execution';
 
 export let options = {
-  vus: 500,
+  vus: 2000,
   duration:'5s'  
 }
 
