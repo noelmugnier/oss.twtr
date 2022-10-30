@@ -15,7 +15,21 @@ using OSS.Twtr.Management.Infrastructure.Endpoints;
 
 namespace OSS.Twtr.Identity.Endpoints;
 
-public record struct LoginRequest(string Username, string Password);
+public record LoginRequest
+{
+    public string Username { get; init; }
+    public string Password { get; init; }
+}
+
+public sealed class LoginRequestValidator : AbstractValidator<LoginRequest>
+{
+    public LoginRequestValidator()
+    {
+        RuleFor(x => x.Username).NotEmpty();
+        RuleFor(x => x.Password).NotEmpty();
+    }
+}
+
 public record struct LoginResponse(string Token);
 public sealed class LoginEndpoint : TwtrEndpoint<LoginRequest, LoginResponse>
 {
@@ -63,14 +77,6 @@ public sealed class LoginEndpoint : TwtrEndpoint<LoginRequest, LoginResponse>
 
 public record struct LoginCommand(string Username, string Password) : ICommand<Result<AuthenticationResultDto>>;
 public record struct AuthenticationResultDto(IdentityUser<Guid> User, IList<Claim> Claims, string BearerToken);
-public sealed class LoginCommandValidator : AbstractValidator<LoginCommand>
-{
-    public LoginCommandValidator()
-    {
-        RuleFor(x => x.Username).NotEmpty();
-        RuleFor(x => x.Password).NotEmpty();
-    }
-}
 
 internal sealed class LoginHandler : ICommandHandler<LoginCommand, Result<AuthenticationResultDto>>
 {

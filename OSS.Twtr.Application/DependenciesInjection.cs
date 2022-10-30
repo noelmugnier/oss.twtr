@@ -22,7 +22,7 @@ public static class DependenciesInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddFastEndpoints();
+        services.AddFastEndpoints(o => o.IncludeAbstractValidators = true);
         services.AddSwaggerDoc(shortSchemaNames: true);
         
         services.AddScoped<IEventDispatcher, EventDispatcher>();

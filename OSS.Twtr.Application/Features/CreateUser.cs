@@ -9,7 +9,22 @@ using OSS.Twtr.Management.Infrastructure.Endpoints;
 
 namespace OSS.Twtr.Identity.Endpoints;
 
-public record struct CreateUserRequest(string Username, string Password, string ConfirmPassword);
+public record CreateUserRequest
+{
+    public string Username { get; init; }
+    public string Password { get; init; }
+    public string ConfirmPassword { get; init; }
+}
+
+public sealed class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
+{
+    public CreateUserRequestValidator()
+    {
+        RuleFor(x => x.Username).NotEmpty().MinimumLength(4);
+        RuleFor(x => x.Password).NotEmpty().MinimumLength(8);
+        RuleFor(x => x.ConfirmPassword).Equal(x => x.Password);
+    }
+}
 public sealed class CreateUserEndpoint : TwtrEndpoint<CreateUserRequest, Guid>
 {
     private readonly IMediator _mediator;
@@ -31,16 +46,6 @@ public sealed class CreateUserEndpoint : TwtrEndpoint<CreateUserRequest, Guid>
 }
 
 public record struct CreateUserCommand(string Username, string Password, string ConfirmPassword) : ICommand<Result<Guid>>;
-public sealed class CreateUserValidator : AbstractValidator<CreateUserCommand>
-{
-    public CreateUserValidator()
-    {
-        RuleFor(x => x.Username).NotEmpty().MinimumLength(4);
-        RuleFor(x => x.Password).NotEmpty().MinimumLength(8);
-        RuleFor(x => x.ConfirmPassword).Equal(x => x.Password);
-    }
-}
-
 public sealed class CreateUserHandler : ICommandHandler<CreateUserCommand, Result<Guid>>
 {
     private readonly UserManager<IdentityUser<Guid>> _userManager;

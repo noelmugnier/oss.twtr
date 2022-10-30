@@ -10,7 +10,19 @@ using OSS.Twtr.Management.Infrastructure.Endpoints;
 
 namespace OSS.Twtr.Management.Application.Queries;
 
-public record struct GetTweetRequest(Guid TweetId);
+public record GetTweetRequest
+{
+    public Guid TweetId { get; init; }
+}
+
+public sealed class GetTweetRequestValidator : AbstractValidator<GetTweetRequest>
+{
+    public GetTweetRequestValidator()
+    {
+        RuleFor(x => x.TweetId).NotEqual(Guid.Empty);
+    }
+}
+
 public sealed class GetTweetEndpoint : TwtrEndpoint<GetTweetRequest, TweetDto>
 {
     private readonly IMediator _mediator;
@@ -18,7 +30,7 @@ public sealed class GetTweetEndpoint : TwtrEndpoint<GetTweetRequest, TweetDto>
 
     public override void Configure()
     {
-        Post("/tweets/{:TweetId}");
+        Get("/tweets/{TweetId:Guid}");
         AllowAnonymous();
     }
 
@@ -31,14 +43,10 @@ public sealed class GetTweetEndpoint : TwtrEndpoint<GetTweetRequest, TweetDto>
 }
 
 public record struct GetTweetQuery(Guid TweetId) : IQuery<Result<TweetDto>>;
-public record struct TweetDto(Guid Id, string Message, DateTime PostedOn, string UserName, string DisplayName);
-public sealed class GetTweetValidator : AbstractValidator<GetTweetQuery>
-{
-    public GetTweetValidator()
-    {
-        RuleFor(x => x.TweetId).NotEqual(Guid.Empty);
-    }
-}
+
+public record struct TweetDto(Guid Id, string Message, DateTime PostedOn, AuthorDto Author);
+
+public record struct AuthorDto(Guid Id, string UserName, string DisplayName);
 
 internal sealed class GetTweetHandler : IQueryHandler<GetTweetQuery, Result<TweetDto>>
 {
@@ -47,9 +55,12 @@ internal sealed class GetTweetHandler : IQueryHandler<GetTweetQuery, Result<Twee
 
     public async Task<Result<TweetDto>> Handle(GetTweetQuery request, CancellationToken ct)
     {
-        var tweet = await _db.Set<Tweet>().SingleOrDefaultAsync(t => t.Id == TweetId.From(request.TweetId), ct);
-        return tweet != null 
-            ? new Result<TweetDto>(new TweetDto(tweet.Id.Value, tweet.Message, tweet.PostedOn, tweet.PostedBy.UserName, tweet.PostedBy.DisplayName)) 
+        var tweet = await _db.Set<Tweet>()
+            .SingleOrDefaultAsync(t => t.Id == TweetId.From(request.TweetId), ct);
+
+        return tweet != null
+            ? new Result<TweetDto>(new TweetDto(tweet.Id.Value, tweet.Message, tweet.PostedOn,
+                new AuthorDto(tweet.PostedBy.Id.Value, tweet.PostedBy.UserName, tweet.PostedBy.DisplayName ?? tweet.PostedBy.UserName)))
             : new Result<TweetDto>(new Error($"Tweet {request.TweetId} not found."));
     }
 }

@@ -42,6 +42,11 @@ public sealed class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
             
+            b.HasMany<Tweet>()
+                .WithOne()
+                .HasForeignKey(c => c.ReplyToTweetId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
             b.Navigation(t => t.PostedBy).AutoInclude();
             
             b.ToTable("Tweets");

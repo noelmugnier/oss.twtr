@@ -10,7 +10,18 @@ using OSS.Twtr.Management.Application.Queries;
 
 namespace OSS.Twtr.Management.Infrastructure.Endpoints;
 
-public record struct CreateTweetRequest(string Message);
+public record CreateTweetRequest
+{
+    public string Message { get; init; }
+}
+
+public sealed class CreateTweetRequestValidator : AbstractValidator<CreateTweetRequest>
+{
+    public CreateTweetRequestValidator()
+    {
+        RuleFor(x => x.Message).NotEmpty();
+    }
+}
 
 public sealed class CreateTweetEndpoint : TwtrEndpoint<CreateTweetRequest, Guid>
 {
@@ -34,14 +45,6 @@ public sealed class CreateTweetEndpoint : TwtrEndpoint<CreateTweetRequest, Guid>
 }
 
 public record struct CreateTweetCommand(Guid UserId, string Message) : ICommand<Result<Guid>>;
-public sealed class CreateTweetValidator : AbstractValidator<CreateTweetCommand>
-{
-    public CreateTweetValidator()
-    {
-        RuleFor(x => x.Message).NotEmpty();
-        RuleFor(x => x.UserId).NotEqual(Guid.Empty);
-    }
-}
 
 internal sealed class CreateTweetHandler : ICommandHandler<CreateTweetCommand, Result<Guid>>
 {
