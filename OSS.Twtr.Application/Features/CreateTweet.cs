@@ -53,8 +53,7 @@ internal sealed class CreateTweetHandler : ICommandHandler<CreateTweetCommand, R
 
     public async Task<Result<Guid>> Handle(CreateTweetCommand request, CancellationToken ct)
     {
-        var user = await _db.Set<User>().SingleOrDefaultAsync(u => u.Id == UserId.From(request.UserId), ct);
-        var entry = await _db.Set<Tweet>().AddAsync(Tweet.Create(request.Message, user), ct);
+        var entry = await _db.Set<Tweet>().AddAsync(Tweet.Create(request.Message, UserId.From(request.UserId)), ct);
         await _db.SaveChangesAsync(ct);
 
         return new Result<Guid>(entry.Entity.Id.Value);

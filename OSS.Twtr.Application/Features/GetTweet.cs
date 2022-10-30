@@ -44,7 +44,7 @@ public sealed class GetTweetEndpoint : TwtrEndpoint<GetTweetRequest, TweetDto>
 
 public record struct GetTweetQuery(Guid TweetId) : IQuery<Result<TweetDto>>;
 
-public record struct TweetDto(Guid Id, string Message, DateTime PostedOn, AuthorDto Author);
+public record struct TweetDto(Guid Id, string Message, DateTime PostedOn);
 
 public record struct AuthorDto(Guid Id, string UserName, string DisplayName);
 
@@ -59,8 +59,7 @@ internal sealed class GetTweetHandler : IQueryHandler<GetTweetQuery, Result<Twee
             .SingleOrDefaultAsync(t => t.Id == TweetId.From(request.TweetId), ct);
 
         return tweet != null
-            ? new Result<TweetDto>(new TweetDto(tweet.Id.Value, tweet.Message, tweet.PostedOn,
-                new AuthorDto(tweet.PostedBy.Id.Value, tweet.PostedBy.UserName, tweet.PostedBy.DisplayName ?? tweet.PostedBy.UserName)))
+            ? new Result<TweetDto>(new TweetDto(tweet.Id.Value, tweet.Message, tweet.PostedOn))
             : new Result<TweetDto>(new Error($"Tweet {request.TweetId} not found."));
     }
 }

@@ -8,33 +8,27 @@ public sealed class Tweet : Entity<TweetId>
     {
     }
 
-    public static Tweet Create(string message, User? postedBy)
+    public static Tweet Create(string message, UserId postedById)
     {
-        if (postedBy == null)
-            throw new InvalidOperationException("PostedBy user is not found");
-        
-        return new Tweet(TweetId.New(), message, postedBy, null);
+        return new Tweet(TweetId.New(), message, postedById, null);
     }
 
-    private Tweet(TweetId id, string message, User postedBy, TweetId? replyToTweetId)
+    private Tweet(TweetId id, string message, UserId postedById, TweetId? replyToTweetId)
         : base(id)
     {
         Message = message;
         PostedOn = DateTime.UtcNow;
-        PostedBy = postedBy;
+        PostedById = postedById;
         ReplyToTweetId = replyToTweetId;
     }
 
     public string Message { get; }
     public DateTime PostedOn { get; }
-    public User PostedBy { get; }
+    public UserId PostedById { get; }
     public TweetId? ReplyToTweetId { get; }
 
-    public Tweet Reply(string message, User postedBy)
+    public static Tweet ReplyTo(string message, TweetId replyToTweetId, UserId postedById)
     {
-        if (postedBy == null)
-            throw new InvalidOperationException("PostedBy user is not found");
-        
-        return new Tweet(TweetId.New(), message, postedBy, Id);
+        return new Tweet(TweetId.New(), message, postedById, replyToTweetId);
     }
 }

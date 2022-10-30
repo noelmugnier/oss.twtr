@@ -54,9 +54,7 @@ internal sealed class ReplyToTweetHandler : ICommandHandler<ReplyToTweetCommand,
 
     public async Task<Result<Guid>> Handle(ReplyToTweetCommand request, CancellationToken ct)
     {
-        var user = await _db.Set<User>().SingleOrDefaultAsync(u => u.Id == UserId.From(request.UserId), ct);
-        var tweet = await _db.Set<Tweet>().SingleOrDefaultAsync(u => u.Id == TweetId.From(request.TweetId), ct);
-        var entry = await _db.Set<Tweet>().AddAsync(tweet.Reply(request.Message, user), ct);
+        var entry = await _db.Set<Tweet>().AddAsync(Tweet.ReplyTo(request.Message, TweetId.From(request.TweetId), UserId.From(request.UserId)), ct);
         await _db.SaveChangesAsync(ct);
 
         return new Result<Guid>(entry.Entity.Id.Value);

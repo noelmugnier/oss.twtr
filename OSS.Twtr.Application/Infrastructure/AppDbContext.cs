@@ -36,9 +36,9 @@ public sealed class AppDbContext : DbContext
             b.Property(t => t.Message).IsRequired();
             b.Property(t => t.PostedOn).IsRequired();
             
-            b.HasOne(t => t.PostedBy)
+            b.HasOne<User>()
                 .WithMany()
-                .HasForeignKey("PostedById")
+                .HasForeignKey(c => c.PostedById)
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
             
@@ -46,8 +46,6 @@ public sealed class AppDbContext : DbContext
                 .WithOne()
                 .HasForeignKey(c => c.ReplyToTweetId)
                 .OnDelete(DeleteBehavior.Restrict);
-            
-            b.Navigation(t => t.PostedBy).AutoInclude();
             
             b.ToTable("Tweets");
         });
