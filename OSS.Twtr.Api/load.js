@@ -1,15 +1,17 @@
 ﻿import http from 'k6/http';
 import { check } from 'k6';
+import exec from 'k6/execution';
 
 export let options = {
-  vus: 100,
+  vus: 500,
   duration:'5s'  
 }
 
 export default function () {
-    const url = 'https://localhost:7120/api/register';
+    const date = Date.now();
+    const url = 'https://localhost:7120/api/auth/register';
     const payload = JSON.stringify({
-        username: 'superUser',
+        username: 'superUser_' + date + '_' + exec.vu.idInTest,
         password: 'superTestPassword',
         confirmPassword:'superTestPassword'
     });
@@ -21,19 +23,41 @@ export default function () {
     };
 
     let res = http.post(url, payload, params);
-    let body = JSON.parse(res.body);
-    const urlTweet = 'https://localhost:7120/api/tweet';
-    const payloadTweet = JSON.stringify({
-        userId: body.id,
-        message: 'super test',
+    check(res, {
+        'register is status 200': (r) => r.status === 200,
     });
+    
+    const loginurl = 'https://localhost:7120/api/auth/login';
+    const payloadloginurl = JSON.stringify({
+        username: 'superUser_' + date + '_' + exec.vu.idInTest,
+        password: 'superTestPassword',
+    });
+
+    let resLogin = http.post(loginurl, payloadloginurl, params);
+    check(resLogin, {
+        'login is status 200': (r) => r.status === 200,
+    });
+
+    let bodyloginurl = JSON.parse(resLogin.body);
+    const paramsloginurl = {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + bodyloginurl.token
+        },
+    };
+
+    const urlTweet = 'https://localhost:7120/api/tweets';
 
     let count = 0;
     while(count < 10) {
-        let resTweet = http.post(urlTweet, payloadTweet, params);
+        const payloadTweet = JSON.stringify({
+            message: count + ': super test for user: ' + 'superUser_' + date + '_' + exec.vu.idInTest,
+        });
+        
+        let resTweet = http.post(urlTweet, payloadTweet, paramsloginurl);
 
         check(resTweet, {
-            'is status 200': (r) => r.status === 200,
+            'post 10 new tweets is status 201': (r) => r.status === 201,
         });
         
         count++;
