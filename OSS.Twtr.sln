@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSS.Twtr.Api", "OSS.Twtr.Api\OSS.Twtr.Api.csproj", "{DABACAF3-1562-4714-8FA2-E09910FDAF48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSS.Twtr.Application", "OSS.Twtr.Application\OSS.Twtr.Application.csproj", "{AE5389B0-4226-45FE-915F-5B1FA593292B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSS.Twtr", "OSS.Twtr\OSS.Twtr.csproj", "{AE5389B0-4226-45FE-915F-5B1FA593292B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSS.Twtr.Migrations.Auth", "OSS.Twtr.Migrations.Auth\OSS.Twtr.Migrations.Auth.csproj", "{0B8D5045-6CDA-40B0-ACA8-D94E5F071415}"
 EndProject

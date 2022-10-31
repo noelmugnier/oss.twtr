@@ -15,7 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\OSS.Twtr.Application\OSS.Twtr.Application.csproj" />
+      <ProjectReference Include="..\OSS.Twtr\OSS.Twtr.csproj" />
       <ProjectReference Include="..\OSS.Twtr.Migrations.App\OSS.Twtr.Migrations.App.csproj" />
       <ProjectReference Include="..\OSS.Twtr.Migrations.Auth\OSS.Twtr.Migrations.Auth.csproj" />
     </ItemGroup>

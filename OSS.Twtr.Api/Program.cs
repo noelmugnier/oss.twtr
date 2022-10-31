@@ -1,4 +1,4 @@
-using OSS.Twtr.Infrastructure;
+using OSS.Twtr;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(o =>
@@ -6,7 +6,7 @@ builder.WebHost.ConfigureKestrel(o =>
     o.Limits.MaxConcurrentConnections = Int64.MaxValue;
 });
 
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AppApplication(builder.Configuration);
 
-var app = builder.Build().UseInfrastructure();
+var app = builder.Build().UseApplication();
 app.Run();
