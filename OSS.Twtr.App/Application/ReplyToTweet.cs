@@ -1,12 +1,15 @@
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
+using OSS.Twtr.App.Domain.Entities;
 using OSS.Twtr.App.Domain.Repositories;
 using OSS.Twtr.App.Domain.ValueObjects;
+using OSS.Twtr.App.Infrastructure;
 using OSS.Twtr.Application;
 using OSS.Twtr.Core;
 
 namespace OSS.Twtr.App.Application;
 
-public record struct ReplyToTweetCommand(Guid UserId, Guid TweetId, string Message) : ICommand<Result<Guid>>;
+public record struct ReplyToTweetCommand(Guid UserId, Guid TweetId, string Message) : ICommand<Result<Unit>>;
 
 public sealed class ReplyToTweetValidator : AbstractValidator<ReplyToTweetCommand>
 {
@@ -23,22 +26,19 @@ public sealed class ReplyToTweetValidator : AbstractValidator<ReplyToTweetComman
     }
 }
 
-internal sealed class ReplyToTweetHandler : ICommandHandler<ReplyToTweetCommand, Result<Guid>>
+internal sealed class ReplyToTweetHandler : ICommandHandler<ReplyToTweetCommand, Result<Unit>>
 {
-    private readonly ITweetRepository _repository;
-    public ReplyToTweetHandler(ITweetRepository repository) => _repository = repository;
+    private readonly AppDbContext _repository;
+    public ReplyToTweetHandler(AppDbContext repository) => _repository = repository;
 
-    public async Task<Result<Guid>> Handle(ReplyToTweetCommand request, CancellationToken ct)
+    public async Task<Result<Unit>> Handle(ReplyToTweetCommand request, CancellationToken ct)
     {
-        var userResult = await _repository.Get(UserId.From(request.UserId), ct);
-        if (!userResult.Success)
-            return new Result<Guid>(userResult.Errors);
+        var tweet = await _repository.Set<Tweet>().SingleAsync(c => c.Id == TweetId.From(request.TweetId), ct);
+        var quote = tweet.Reply(request.Message, UserId.From(request.UserId));
+        
+        await _repository.AddAsync(quote, ct);    
 
-        var author = userResult.Data;
-        var replyId = author.ReplyTo(TweetId.From(request.TweetId), request.Message);
-
-        await _repository.Save(author, ct);
-
-        return new Result<Guid>(replyId.Value);
+        var results= await _repository.SaveChangesAsync(ct);
+        return results > 0 ? new Result<Unit>(Unit.Value):new Result<Unit>(new Error("Failed to reply to tweet"));
     }
 }

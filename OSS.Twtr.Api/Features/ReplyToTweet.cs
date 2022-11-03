@@ -7,18 +7,18 @@ namespace OSS.Twtr.Api.Features;
 
 public record ReplyToTweetRequest
 {
-    public Guid TweetId { get; set; }
+    public Guid TweetId { get; init; }
     public string Message { get; init; }
 }
 
-public sealed class ReplyToTweetEndpoint : TwtrEndpoint<ReplyToTweetRequest, Guid>
+public sealed class ReplyToTweetEndpoint : TwtrEndpoint<ReplyToTweetRequest>
 {
     private readonly ICommandDispatcher _mediator;
     public ReplyToTweetEndpoint(ICommandDispatcher mediator) => _mediator = mediator;
 
     public override void Configure()
     {
-        Post("/tweets/{TweetId:Guid}");
+        Post("/tweets/{TweetId:Guid}/reply");
         Policies("auth");
     }
 
@@ -29,7 +29,7 @@ public sealed class ReplyToTweetEndpoint : TwtrEndpoint<ReplyToTweetRequest, Gui
                 req.TweetId, req.Message), ct);
 
         await result.On(
-            tweetId => SendCreatedAtAsync<GetTweetEndpoint>(new {TweetId = tweetId}, tweetId, cancellation: ct),
+            tweetId => SendOkAsync(cancellation: ct),
             errors => SendResultErrorsAsync(errors, ct));
     }
 }

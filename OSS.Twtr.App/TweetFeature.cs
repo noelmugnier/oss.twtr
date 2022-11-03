@@ -16,10 +16,7 @@ public class TweetFeature : IFeature
             c.UseSqlServer(configuration.GetConnectionString("Data"), 
                 options => options.MigrationsAssembly(typeof(TweetFeature).Assembly.FullName)));
         
-        services.AddDbContext<IReadRepository, ReadRepository>(c => 
-            c.UseSqlServer(configuration.GetConnectionString("Data")));
-
-        services.AddDbContext<ITweetRepository, TweetRepository>(c =>
+        services.AddDbContext<IReadDbContext, ReadDbContext>(c => 
             c.UseSqlServer(configuration.GetConnectionString("Data")));
 
         return services;

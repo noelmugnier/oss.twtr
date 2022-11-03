@@ -10,7 +10,7 @@ public record CreateTweetRequest
     public string Message { get; init; }
 }
 
-public sealed class CreateTweetEndpoint : TwtrEndpoint<CreateTweetRequest, Guid>
+public sealed class CreateTweetEndpoint : TwtrEndpoint<CreateTweetRequest>
 {
     private readonly ICommandDispatcher _mediator;
     public CreateTweetEndpoint(ICommandDispatcher mediator) => _mediator = mediator;
@@ -24,11 +24,11 @@ public sealed class CreateTweetEndpoint : TwtrEndpoint<CreateTweetRequest, Guid>
     public override async Task HandleAsync(CreateTweetRequest req, CancellationToken ct)
     {
         var result = await _mediator.Execute(
-            new CreateTweetCommand(Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value),
+            new PostTweetCommand(Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value),
                 req.Message), ct);
 
         await result.On(
-            tweetId => SendCreatedAtAsync<GetTweetEndpoint>(new {TweetId = tweetId}, tweetId, cancellation: ct),
+            success => SendOkAsync(cancellation: ct),
             errors => SendResultErrorsAsync(errors, ct));
     }
 }

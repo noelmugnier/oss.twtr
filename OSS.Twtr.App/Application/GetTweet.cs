@@ -20,8 +20,8 @@ public record struct AuthorDto(Guid Id, string UserName, string? DisplayName);
 
 internal sealed class GetTweetHandler : IQueryHandler<GetTweetQuery, Result<TweetDto>>
 {
-    private readonly IReadRepository _db;
-    public GetTweetHandler(IReadRepository db) => _db = db;
+    private readonly IReadDbContext _db;
+    public GetTweetHandler(IReadDbContext db) => _db = db;
 
     public async Task<Result<TweetDto>> Handle(GetTweetQuery request, CancellationToken ct)
     {

@@ -2,4 +2,4 @@
 
 namespace OSS.Twtr.App.Domain.Events;
 
-public record TweetPosted(Guid Id) : DomainEvent;
+public record TweetPosted(Guid TweetId, Guid ByUserId) : DomainEvent;

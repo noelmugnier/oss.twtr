@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OSS.Twtr.App.Domain.Entities;
 using OSS.Twtr.App.Domain.ValueObjects;
 
 namespace OSS.Twtr.App.Infrastructure;
@@ -12,62 +13,99 @@ public sealed class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<UserData>(b =>
+        modelBuilder.Entity<Author>(b =>
         {
             b.HasKey(u => u.Id);
             b.Property(u => u.Id)
                 .HasConversion(id => id.Value, guid => UserId.From(guid));
-            
+
             b.Property(t => t.UserName).IsRequired();
             b.Property(t => t.DisplayName);
             b.Property(t => t.Email);
             b.Property(t => t.MemberSince).IsRequired();
+
+            b.Ignore(c => c.DomainEvents);
             
-            b.ToTable(UserData.TableName);
+            b.ToTable("Users");
         });
-        
-        modelBuilder.Entity<TweetData>(b =>
+
+        modelBuilder.Entity<Tweet>(b =>
         {
             b.HasKey(u => u.Id);
             b.Property(u => u.Id)
                 .HasConversion(id => id.Value, guid => TweetId.From(guid));
 
-            b.Property(t => t.Message).IsRequired();
+            b.Property(t => t.Kind).IsRequired();
+            b.Property(t => t.Message);
             b.Property(t => t.PostedOn).IsRequired();
-            b.Property(t => t.AuthorId).HasColumnName("PostedById").IsRequired();
-            
-            b.HasOne<UserData>()
+            b.Property(t => t.AuthorId).IsRequired();
+            b.Property(t => t.ThreadId)
+                .HasConversion(id => id.Value, guid => ThreadId.From(guid));
+
+            b.HasOne<Author>()
                 .WithMany()
                 .HasForeignKey(c => c.AuthorId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
-            
-            b.HasMany<TweetData>()
-                .WithOne()
-                .HasForeignKey(c => c.ReplyToTweetId)
+
+            b.HasOne<Tweet>()
+                .WithMany()
+                .HasForeignKey(c => c.ReferenceTweetId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            b.Ignore(c => c.DomainEvents);
+
+            b.ToTable("Tweets");
+        });
+        
+        modelBuilder.Entity<Subscription>(b =>
+        {
+            b.Property(c => c.SubscribedToUserId)
+                .HasConversion(id => id.Value, guid => UserId.From(guid));
+
+            b.Property(c => c.FollowerUserId)
+                .HasConversion(id => id.Value, guid => UserId.From(guid));
+
+            b.Property(c => c.SubscribedOn);
+
+            b.HasKey(c => new {c.FollowerUserId, c.SubscribedToUserId});
             
-            b.ToTable(TweetData.TableName);
+            b.Ignore(c => c.DomainEvents);
+            b.ToTable("Subscriptions");
+        });
+        
+        modelBuilder.Entity<Like>(b =>
+        {
+            b.Property(c => c.UserId)
+                .HasConversion(id => id.Value, guid => UserId.From(guid));
+
+            b.Property(c => c.TweetId)
+                .HasConversion(id => id.Value, guid => TweetId.From(guid));
+
+            b.Property(c => c.LikedOn);
+
+            b.HasKey(c => new {c.UserId, c.TweetId});
+            
+            b.Ignore(c => c.DomainEvents);
+            
+            b.ToTable("Likes");
+        });
+        
+        modelBuilder.Entity<Bookmark>(b =>
+        {
+            b.Property(c => c.UserId)
+                .HasConversion(id => id.Value, guid => UserId.From(guid));
+
+            b.Property(c => c.TweetId)
+                .HasConversion(id => id.Value, guid => TweetId.From(guid));
+
+            b.Property(c => c.BookmarkedOn);
+
+            b.HasKey(c => new {c.UserId, c.TweetId});
+            
+            b.Ignore(c => c.DomainEvents);
+            
+            b.ToTable("Bookmarks");
         });
     }
-}
-
-internal class UserData
-{
-    public const string TableName = "Users"; 
-    public UserId Id { get; set; }
-    public string UserName { get; set; }
-    public string? DisplayName { get; set; }
-    public string? Email { get; set; }
-    public DateTime MemberSince { get; set; }
-}
-
-internal class TweetData 
-{
-    public const string TableName = "Tweets"; 
-    public TweetId Id { get; set; }
-    public string Message { get; set; }
-    public DateTime PostedOn { get; set; }
-    public UserId AuthorId { get; set; }
-    public TweetId? ReplyToTweetId { get; set; }
 }

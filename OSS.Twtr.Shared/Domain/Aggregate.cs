@@ -1,13 +1,41 @@
 namespace OSS.Twtr.Domain;
 
-public abstract class Aggregate<TId> : Entity<TId>, IEquatable<Aggregate<TId>> where TId : IdentifiableId
+public interface IAggregate
+{
+    IReadOnlyCollection<DomainEvent> DomainEvents { get; }
+    void ClearEvents();
+}
+
+public abstract class Aggregate : IEquatable<Aggregate>, IAggregate
 {
     private List<DomainEvent> _events = new();
 
     protected void RaiseEvent(DomainEvent @event) => _events.Add(@event);
 
     public IReadOnlyCollection<DomainEvent> DomainEvents => _events.AsReadOnly();
-    
+    public void ClearEvents()
+    {
+        _events.Clear();
+    }
+
+    public bool Equals(Aggregate? other)
+    {
+        return Equals((object?) other);
+    }
+}
+
+public abstract class Aggregate<TId> : Entity<TId>, IAggregate, IEquatable<Aggregate<TId>> where TId : IdentifiableId
+{
+    private List<DomainEvent> _events = new();
+
+    protected void RaiseEvent(DomainEvent @event) => _events.Add(@event);
+
+    public IReadOnlyCollection<DomainEvent> DomainEvents => _events.AsReadOnly();
+    public void ClearEvents()
+    {
+        _events.Clear();
+    }
+
     protected Aggregate(TId id) : base(id){}
     public bool Equals(Aggregate<TId>? other)
     {

@@ -15,4 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\OSS.Twtr.Shared\OSS.Twtr.Shared.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Infrastructure\Migrations" />
+  </ItemGroup>
 </Project>

@@ -32,7 +32,7 @@ public static class DependenciesInjection
                 if (!configureFeatureType.IsAssignableFrom(featureType))
                     continue;
                 
-                var feature = (IConfigureFeature) Activator.CreateInstance(featureType);
+                var feature = (IConfigureFeature) Activator.CreateInstance(featureType)!;
                 feature.Configure(services, configuration);
             }
 
@@ -55,7 +55,7 @@ public static class DependenciesInjection
                 if (!useFeatureType.IsAssignableFrom(featureType))
                     continue;
 
-                var feature = (IUseFeature) Activator.CreateInstance(featureType);
+                var feature = (IUseFeature) Activator.CreateInstance(featureType)!;
                 feature.Use(app, configuration);
             }
         }
