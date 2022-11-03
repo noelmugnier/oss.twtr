@@ -1,12 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# 
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSS.Twtr.Api", "OSS.Twtr.Api\OSS.Twtr.Api.csproj", "{DABACAF3-1562-4714-8FA2-E09910FDAF48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSS.Twtr", "OSS.Twtr\OSS.Twtr.csproj", "{AE5389B0-4226-45FE-915F-5B1FA593292B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSS.Twtr.Auth", "OSS.Twtr.Auth\OSS.Twtr.Auth.csproj", "{6E13F0E6-2F5D-48D5-BE99-8B0CBBF04AC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSS.Twtr.Migrations.Auth", "OSS.Twtr.Migrations.Auth\OSS.Twtr.Migrations.Auth.csproj", "{0B8D5045-6CDA-40B0-ACA8-D94E5F071415}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSS.Twtr.App", "OSS.Twtr.App\OSS.Twtr.App.csproj", "{EC22A1AF-4E67-4C17-ABAF-1049E360EE47}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSS.Twtr.Migrations.App", "OSS.Twtr.Migrations.App\OSS.Twtr.Migrations.App.csproj", "{9CB9EA5C-5C11-417A-BBB4-06EC33FE9D96}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSS.Twtr.Shared", "OSS.Twtr.Shared\OSS.Twtr.Shared.csproj", "{BD565C77-115D-47D0-A7B2-CE233762CE11}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,18 +19,18 @@ Global
 		{DABACAF3-1562-4714-8FA2-E09910FDAF48}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DABACAF3-1562-4714-8FA2-E09910FDAF48}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DABACAF3-1562-4714-8FA2-E09910FDAF48}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AE5389B0-4226-45FE-915F-5B1FA593292B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AE5389B0-4226-45FE-915F-5B1FA593292B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AE5389B0-4226-45FE-915F-5B1FA593292B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AE5389B0-4226-45FE-915F-5B1FA593292B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0B8D5045-6CDA-40B0-ACA8-D94E5F071415}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0B8D5045-6CDA-40B0-ACA8-D94E5F071415}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0B8D5045-6CDA-40B0-ACA8-D94E5F071415}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0B8D5045-6CDA-40B0-ACA8-D94E5F071415}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9CB9EA5C-5C11-417A-BBB4-06EC33FE9D96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9CB9EA5C-5C11-417A-BBB4-06EC33FE9D96}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9CB9EA5C-5C11-417A-BBB4-06EC33FE9D96}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9CB9EA5C-5C11-417A-BBB4-06EC33FE9D96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E13F0E6-2F5D-48D5-BE99-8B0CBBF04AC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E13F0E6-2F5D-48D5-BE99-8B0CBBF04AC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E13F0E6-2F5D-48D5-BE99-8B0CBBF04AC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E13F0E6-2F5D-48D5-BE99-8B0CBBF04AC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC22A1AF-4E67-4C17-ABAF-1049E360EE47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC22A1AF-4E67-4C17-ABAF-1049E360EE47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC22A1AF-4E67-4C17-ABAF-1049E360EE47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC22A1AF-4E67-4C17-ABAF-1049E360EE47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD565C77-115D-47D0-A7B2-CE233762CE11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD565C77-115D-47D0-A7B2-CE233762CE11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD565C77-115D-47D0-A7B2-CE233762CE11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD565C77-115D-47D0-A7B2-CE233762CE11}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
