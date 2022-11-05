@@ -15,7 +15,7 @@ public sealed class FollowUserValidator : AbstractValidator<FollowUserCommand>
     public FollowUserValidator()
     {
         RuleFor(x => x.UserId).NotEqual(Guid.Empty)
-            .WithMessage("You must be authenticated to like a tweet");
+            .WithMessage("You must be authenticated to follow a user");
 
         RuleFor(x => x.UserIdToFollow).NotEmpty()
             .WithMessage("You must specify the user to follow");

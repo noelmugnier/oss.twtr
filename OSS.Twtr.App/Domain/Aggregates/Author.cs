@@ -13,4 +13,10 @@ public class Author : Aggregate<UserId>
     public string? DisplayName { get; }
     public string? Email { get; }
     public DateTime MemberSince { get; }
+    public TweetId? PinnedTweetId { get; private set; }
+    
+    public void PinTweet(TweetId tweetId)
+    {
+        PinnedTweetId = tweetId;
+    }
 }

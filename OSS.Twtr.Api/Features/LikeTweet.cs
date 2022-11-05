@@ -17,7 +17,7 @@ public sealed class LikeTweetEndpoint : TwtrEndpoint<LikeTweetRequest>
 
     public override void Configure()
     {
-        Post("/tweets/{TweetId:Guid}/like");
+        Put("/tweets/{TweetId:Guid}/like");
         Policies("auth");
     }
 

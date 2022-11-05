@@ -17,7 +17,7 @@ public sealed class BookmarkTweetEndpoint : TwtrEndpoint<BookmarkTweetRequest>
 
     public override void Configure()
     {
-        Post("/tweets/{TweetId:Guid}/bookmark");
+        Put("/tweets/{TweetId:Guid}/bookmark");
         Policies("auth");
     }
 

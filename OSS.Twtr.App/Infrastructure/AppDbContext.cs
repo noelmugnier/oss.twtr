@@ -23,7 +23,11 @@ public sealed class AppDbContext : DbContext
             b.Property(t => t.DisplayName);
             b.Property(t => t.Email);
             b.Property(t => t.MemberSince).IsRequired();
+            b.Property(t => t.PinnedTweetId)
+                .HasConversion(id => id.Value, guid => TweetId.From(guid));
 
+            b.HasOne<Tweet>().WithOne().HasForeignKey<Author>(c => c.PinnedTweetId);
+            
             b.Ignore(c => c.DomainEvents);
             
             b.ToTable("Users");
@@ -83,11 +87,17 @@ public sealed class AppDbContext : DbContext
                 .HasConversion(id => id.Value, guid => TweetId.From(guid));
 
             b.Property(c => c.LikedOn);
-
             b.HasKey(c => new {c.UserId, c.TweetId});
+
+            b.HasOne<Author>().WithMany()
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            b.HasOne<Tweet>().WithMany()
+                .HasForeignKey(c => c.TweetId)
+                .OnDelete(DeleteBehavior.Cascade);
             
             b.Ignore(c => c.DomainEvents);
-            
             b.ToTable("Likes");
         });
         
@@ -100,12 +110,64 @@ public sealed class AppDbContext : DbContext
                 .HasConversion(id => id.Value, guid => TweetId.From(guid));
 
             b.Property(c => c.BookmarkedOn);
-
             b.HasKey(c => new {c.UserId, c.TweetId});
             
-            b.Ignore(c => c.DomainEvents);
+            b.HasOne<Author>().WithMany()
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
             
+            b.HasOne<Tweet>().WithMany()
+                .HasForeignKey(c => c.TweetId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            b.Ignore(c => c.DomainEvents);
             b.ToTable("Bookmarks");
+        });
+        
+        modelBuilder.Entity<Block>(b =>
+        {
+            b.Property(c => c.UserId)
+                .HasConversion(id => id.Value, guid => UserId.From(guid));
+
+            b.Property(c => c.UserIdToBlock)
+                .HasConversion(id => id.Value, guid => UserId.From(guid));
+
+            b.Property(c => c.BlockedOn);
+            b.HasKey(c => new {c.UserId, c.UserIdToBlock});
+            
+            b.HasOne<Author>().WithMany()
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            b.HasOne<Author>().WithMany()
+                .HasForeignKey(c => c.UserIdToBlock)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            b.Ignore(c => c.DomainEvents);
+            b.ToTable("BlockedUsers");
+        });
+        
+        modelBuilder.Entity<Mute>(b =>
+        {
+            b.Property(c => c.UserId)
+                .HasConversion(id => id.Value, guid => UserId.From(guid));
+
+            b.Property(c => c.UserIdToMute)
+                .HasConversion(id => id.Value, guid => UserId.From(guid));
+
+            b.Property(c => c.MutedOn);
+            b.HasKey(c => new {c.UserId, c.UserIdToMute});
+            
+            b.HasOne<Author>().WithMany()
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            b.HasOne<Author>().WithMany()
+                .HasForeignKey(c => c.UserIdToMute)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            b.Ignore(c => c.DomainEvents);
+            b.ToTable("MutedUsers");
         });
     }
 }

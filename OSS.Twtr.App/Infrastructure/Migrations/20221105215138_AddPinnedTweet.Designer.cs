@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OSS.Twtr.App.Infrastructure;
 
@@ -11,9 +12,10 @@ using OSS.Twtr.App.Infrastructure;
 namespace OSS.Twtr.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221105215138_AddPinnedTweet")]
+    partial class AddPinnedTweet
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,8 +67,6 @@ namespace OSS.Twtr.Infrastructure.Migrations
 
                     b.HasKey("UserId", "UserIdToBlock");
 
-                    b.HasIndex("UserIdToBlock");
-
                     b.ToTable("BlockedUsers", (string)null);
                 });
 
@@ -82,8 +82,6 @@ namespace OSS.Twtr.Infrastructure.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.HasKey("UserId", "TweetId");
-
-                    b.HasIndex("TweetId");
 
                     b.ToTable("Bookmarks", (string)null);
                 });
@@ -101,8 +99,6 @@ namespace OSS.Twtr.Infrastructure.Migrations
 
                     b.HasKey("UserId", "TweetId");
 
-                    b.HasIndex("TweetId");
-
                     b.ToTable("Likes", (string)null);
                 });
 
@@ -118,8 +114,6 @@ namespace OSS.Twtr.Infrastructure.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.HasKey("UserId", "UserIdToMute");
-
-                    b.HasIndex("UserIdToMute");
 
                     b.ToTable("MutedUsers", (string)null);
                 });
@@ -177,66 +171,6 @@ namespace OSS.Twtr.Infrastructure.Migrations
                     b.HasOne("OSS.Twtr.App.Domain.Entities.Tweet", null)
                         .WithOne()
                         .HasForeignKey("OSS.Twtr.App.Domain.Entities.Author", "PinnedTweetId");
-                });
-
-            modelBuilder.Entity("OSS.Twtr.App.Domain.Entities.Block", b =>
-                {
-                    b.HasOne("OSS.Twtr.App.Domain.Entities.Author", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("OSS.Twtr.App.Domain.Entities.Author", null)
-                        .WithMany()
-                        .HasForeignKey("UserIdToBlock")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("OSS.Twtr.App.Domain.Entities.Bookmark", b =>
-                {
-                    b.HasOne("OSS.Twtr.App.Domain.Entities.Tweet", null)
-                        .WithMany()
-                        .HasForeignKey("TweetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("OSS.Twtr.App.Domain.Entities.Author", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("OSS.Twtr.App.Domain.Entities.Like", b =>
-                {
-                    b.HasOne("OSS.Twtr.App.Domain.Entities.Tweet", null)
-                        .WithMany()
-                        .HasForeignKey("TweetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("OSS.Twtr.App.Domain.Entities.Author", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("OSS.Twtr.App.Domain.Entities.Mute", b =>
-                {
-                    b.HasOne("OSS.Twtr.App.Domain.Entities.Author", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("OSS.Twtr.App.Domain.Entities.Author", null)
-                        .WithMany()
-                        .HasForeignKey("UserIdToMute")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("OSS.Twtr.App.Domain.Entities.Tweet", b =>

@@ -17,7 +17,7 @@ public sealed class FollowUserEndpoint : TwtrEndpoint<FollowUserRequest>
 
     public override void Configure()
     {
-        Post("/users/{UserIdToFollow:Guid}/follow");
+        Put("/users/{UserIdToFollow:Guid}/follow");
         Policies("auth");
     }
 

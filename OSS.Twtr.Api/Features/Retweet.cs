@@ -17,7 +17,7 @@ public sealed class RetweetEndpoint : TwtrEndpoint<RetweetRequest>
 
     public override void Configure()
     {
-        Post("/tweets/{TweetId:Guid}/retweet");
+        Put("/tweets/{TweetId:Guid}/retweet");
         Policies("auth");
     }
 
