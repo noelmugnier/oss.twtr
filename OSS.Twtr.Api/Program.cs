@@ -45,8 +45,12 @@ app.Run();
 
 //TODO: Tweet visibility
 //TODO: Un-xxx support
-//TODO: Remove tweet
+//TODO: PUT support on endpoint (idempotent)
 //TODO: parse tweet content (#, @, links)
+//TODO: Trending topics
+//TODO: Timelines
+
+// --bonus--
 //TODO: Lists support
 //TODO: Edit account
 //TODO: account picture

@@ -1,3 +1,4 @@
+using OSS.Twtr.App.Domain.Events;
 using OSS.Twtr.App.Domain.ValueObjects;
 using OSS.Twtr.Domain;
 
@@ -9,10 +10,13 @@ public class Block : Aggregate
     public UserId UserIdToBlock { get; }
     public DateTimeOffset BlockedOn { get; } = DateTimeOffset.UtcNow;
 
+    private Block(){}
+    
     private Block(UserId userId, UserId userIdToBlock)
     {
         UserId = userId;
         UserIdToBlock = userIdToBlock;
+        RaiseEvent(new UserBlockedBy(userIdToBlock.Value, userId.Value));
     }
 
     public static Block Create(UserId userId, UserId userIdToBlock)

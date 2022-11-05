@@ -49,6 +49,11 @@ public class Tweet : Aggregate<TweetId>
         return quote;
     }
 
+    public void Remove()
+    {
+        RaiseEvent(new TweetRemoved(Id.Value, AuthorId.Value));
+    }
+
     public static Tweet Create(ThreadId threadId, string message, UserId authorId)
     {
         var tweet = new Tweet(TweetKind.Tweet, message, authorId, null, threadId);
