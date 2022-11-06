@@ -1,6 +1,8 @@
 using System.Text.Json.Serialization;
 using FastEndpoints;
 using FastEndpoints.Swagger;
+using Hangfire;
+using Newtonsoft.Json;
 using OSS.Twtr;
 using OSS.Twtr.Api;
 using OSS.Twtr.App;
@@ -17,6 +19,17 @@ builder.Services.AddFeatures(builder.Configuration, assemblies);
 
 builder.Services.AddFastEndpoints(o => o.IncludeAbstractValidators = true);
 builder.Services.AddSwaggerDoc(shortSchemaNames: true);
+
+builder.Services.AddHangfire(configuration =>
+{
+    configuration.UseSqlServerStorage(builder.Configuration.GetConnectionString("Data"));
+    configuration.UseSerializerSettings(new JsonSerializerSettings
+    {
+        TypeNameHandling = TypeNameHandling.All
+    });
+});
+
+builder.Services.AddHangfireServer();
 
 var app = builder.Build();
 
@@ -41,10 +54,11 @@ app.UseSwaggerUi3(s =>
     s.OperationsSorter = "alpha";
 });
 
+app.UseHangfireDashboard();
+
 app.Run();
 
-//TODO: Tweet visibility
-//TODO: parse tweet content (#, @, links)
+//TODO: parse tweet content (#, @, links, names)
 //TODO: Trending topics
 //TODO: Timelines
 

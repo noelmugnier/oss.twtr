@@ -32,10 +32,22 @@ public sealed class AppDbContext : DbContext
         return base.Remove(entity);
     }
 
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
     {
-        //TODO : Add logic to dispatch events
-        return base.SaveChangesAsync(cancellationToken);
+        var result = await base.SaveChangesAsync(cancellationToken);
+        
+        foreach (var entry in ChangeTracker.Entries())
+        {
+            if (entry.Entity is not IAggregate aggregate) 
+                continue;
+            
+            foreach (var @event in aggregate.DomainEvents)
+                _dispatcher.Dispatch(@event);
+            
+            aggregate.ClearEvents();
+        }
+
+        return result;
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
