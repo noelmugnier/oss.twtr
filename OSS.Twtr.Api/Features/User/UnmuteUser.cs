@@ -5,27 +5,27 @@ using OSS.Twtr.Common.Infrastructure;
 
 namespace OSS.Twtr.Api.Features;
 
-public record PostTweetRequest
+public record UnmuteUserRequest
 {
-    public string Message { get; init; }
+    public Guid UserId { get; init; }
 }
 
-public sealed class PostTweetEndpoint : TwtrEndpoint<PostTweetRequest>
+public sealed class UnmuteUserEndpoint : TwtrEndpoint<UnmuteUserRequest>
 {
     private readonly ICommandDispatcher _mediator;
-    public PostTweetEndpoint(ICommandDispatcher mediator) => _mediator = mediator;
+    public UnmuteUserEndpoint(ICommandDispatcher mediator) => _mediator = mediator;
 
     public override void Configure()
     {
-        Post("/tweets");
+        Put("/users/{UserId:Guid}/unmute");
         Policies("auth");
     }
 
-    public override async Task HandleAsync(PostTweetRequest req, CancellationToken ct)
+    public override async Task HandleAsync(UnmuteUserRequest req, CancellationToken ct)
     {
         var result = await _mediator.Execute(
-            new PostTweetCommand(Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value),
-                req.Message), ct);
+            new UnmuteUserCommand(req.UserId, Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes
+            .NameIdentifier).Value)), ct);
 
         await result.On(
             success => SendOkAsync(cancellation: ct),

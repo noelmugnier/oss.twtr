@@ -5,26 +5,26 @@ using OSS.Twtr.Common.Infrastructure;
 
 namespace OSS.Twtr.Api.Features;
 
-public record BlockUserRequest
+public record UnblockUserRequest
 {
-    public Guid UserIdToBlock { get; init; }
+    public Guid UserId { get; init; }
 }
 
-public sealed class BlockUserEndpoint : TwtrEndpoint<BlockUserRequest>
+public sealed class UnblockUserEndpoint : TwtrEndpoint<UnblockUserRequest>
 {
     private readonly ICommandDispatcher _mediator;
-    public BlockUserEndpoint(ICommandDispatcher mediator) => _mediator = mediator;
+    public UnblockUserEndpoint(ICommandDispatcher mediator) => _mediator = mediator;
 
     public override void Configure()
     {
-        Put("/users/{UserIdToBlock:Guid}/block");
+        Put("/users/{UserId:Guid}/unblock");
         Policies("auth");
     }
 
-    public override async Task HandleAsync(BlockUserRequest req, CancellationToken ct)
+    public override async Task HandleAsync(UnblockUserRequest req, CancellationToken ct)
     {
         var result = await _mediator.Execute(
-            new BlockUserCommand(req.UserIdToBlock, Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes
+            new UnblockUserCommand(req.UserId, Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes
             .NameIdentifier).Value)), ct);
 
         await result.On(

@@ -5,28 +5,27 @@ using OSS.Twtr.Common.Infrastructure;
 
 namespace OSS.Twtr.Api.Features;
 
-public record QuoteTweetRequest
+public record UndoRetweetRequest
 {
     public Guid TweetId { get; init; }
-    public string Message { get; init; }
 }
 
-public sealed class QuoteTweetEndpoint : TwtrEndpoint<QuoteTweetRequest>
+public sealed class UndoRetweetEndpoint : TwtrEndpoint<UndoRetweetRequest>
 {
     private readonly ICommandDispatcher _mediator;
-    public QuoteTweetEndpoint(ICommandDispatcher mediator) => _mediator = mediator;
+    public UndoRetweetEndpoint(ICommandDispatcher mediator) => _mediator = mediator;
 
     public override void Configure()
     {
-        Post("/tweets/{TweetId:Guid}/quote");
+        Put("/tweets/{TweetId:Guid}/retweet/undo");
         Policies("auth");
     }
 
-    public override async Task HandleAsync(QuoteTweetRequest req, CancellationToken ct)
+    public override async Task HandleAsync(UndoRetweetRequest req, CancellationToken ct)
     {
         var result = await _mediator.Execute(
-            new QuoteTweetCommand(Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value),
-                req.TweetId, req.Message), ct);
+            new UndoRetweetCommand(Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value),
+                req.TweetId), ct);
 
         await result.On(
             tweetId => SendOkAsync(cancellation: ct),

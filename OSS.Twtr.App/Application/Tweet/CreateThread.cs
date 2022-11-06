@@ -1,7 +1,6 @@
 using FluentValidation;
 using OSS.Twtr.App.Domain.Entities;
-using OSS.Twtr.App.Domain.Events;
-using OSS.Twtr.App.Domain.Repositories;
+using OSS.Twtr.App.Domain.Enums;
 using OSS.Twtr.App.Domain.ValueObjects;
 using OSS.Twtr.App.Infrastructure;
 using OSS.Twtr.Application;
@@ -9,7 +8,7 @@ using OSS.Twtr.Core;
 
 namespace OSS.Twtr.App.Application;
 
-public record struct CreateThreadCommand(Guid UserId, IEnumerable<string> Messages) : ICommand<Result<Unit>>;
+public record struct CreateThreadCommand(Guid UserId, IEnumerable<string> Messages, TweetAllowedReplies AllowedReplies) : ICommand<Result<Unit>>;
 
 internal sealed class CreateThreadValidator : AbstractValidator<CreateThreadCommand>
 {
@@ -33,7 +32,7 @@ internal sealed class CreateThreadHandler : ICommandHandler<CreateThreadCommand,
         var userId = UserId.From(request.UserId);
         foreach (var message in request.Messages.Reverse())
         {
-            var tweet = Tweet.Create(threadId, message, userId);
+            var tweet = Tweet.Create(threadId, message, userId, request.AllowedReplies);
             await _repository.AddAsync(tweet, ct);
         }
 

@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using OSS.Twtr.App.Domain.Entities;
+using OSS.Twtr.App.Domain.Enums;
 using OSS.Twtr.App.Domain.Repositories;
 using OSS.Twtr.App.Domain.ValueObjects;
 using OSS.Twtr.App.Infrastructure;
@@ -30,6 +31,14 @@ internal sealed class RetweetHandler : ICommandHandler<RetweetCommand, Result<Un
 
     public async Task<Result<Unit>> Handle(RetweetCommand request, CancellationToken ct)
     {
+        var existingRetweet = await _repository.Set<Tweet>().SingleOrDefaultAsync(c => 
+            c.Kind == TweetKind.Retweet 
+            && c.ReferenceTweetId == TweetId.From(request.TweetId)
+            && c.AuthorId == UserId.From(request.UserId), ct);
+
+        if (existingRetweet != null)
+            return new Result<Unit>(new Error("Cannot retweet the same tweet twice"));
+        
         var tweet = await _repository.Set<Tweet>().SingleAsync(c => c.Id == TweetId.From(request.TweetId), ct);
         var quote = tweet.Retweet(UserId.From(request.UserId));
         

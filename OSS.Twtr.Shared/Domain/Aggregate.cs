@@ -4,6 +4,7 @@ public interface IAggregate
 {
     IReadOnlyCollection<DomainEvent> DomainEvents { get; }
     void ClearEvents();
+    void Remove();
 }
 
 public abstract class Aggregate : IEquatable<Aggregate>, IAggregate
@@ -17,6 +18,8 @@ public abstract class Aggregate : IEquatable<Aggregate>, IAggregate
     {
         _events.Clear();
     }
+
+    public abstract void Remove();
 
     public bool Equals(Aggregate? other)
     {
@@ -35,6 +38,8 @@ public abstract class Aggregate<TId> : Entity<TId>, IAggregate, IEquatable<Aggre
     {
         _events.Clear();
     }
+    
+    public abstract void Remove();
 
     protected Aggregate(TId id) : base(id){}
     public bool Equals(Aggregate<TId>? other)

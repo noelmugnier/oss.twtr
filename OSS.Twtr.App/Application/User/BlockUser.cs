@@ -29,11 +29,11 @@ internal sealed class BlockUserHandler : ICommandHandler<BlockUserCommand, Resul
 
     public async Task<Result<Unit>> Handle(BlockUserCommand request, CancellationToken ct)
     {
-        var subscription = Block.Create(
+        var blockedUser = Block.Create(
             UserId.From(request.UserId), 
             UserId.From(request.UserIdToBlock));
         
-        await _repository.AddAsync(subscription, ct);
+        await _repository.AddAsync(blockedUser, ct);
         
         var results= await _repository.SaveChangesAsync(ct);
         return results > 0 ? new Result<Unit>(Unit.Value):new Result<Unit>(new Error("Failed to Block user"));

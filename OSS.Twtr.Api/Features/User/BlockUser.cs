@@ -5,26 +5,26 @@ using OSS.Twtr.Common.Infrastructure;
 
 namespace OSS.Twtr.Api.Features;
 
-public record MuteUserRequest
+public record BlockUserRequest
 {
-    public Guid UserIdToMute { get; init; }
+    public Guid UserId { get; init; }
 }
 
-public sealed class MuteUserEndpoint : TwtrEndpoint<MuteUserRequest>
+public sealed class BlockUserEndpoint : TwtrEndpoint<BlockUserRequest>
 {
     private readonly ICommandDispatcher _mediator;
-    public MuteUserEndpoint(ICommandDispatcher mediator) => _mediator = mediator;
+    public BlockUserEndpoint(ICommandDispatcher mediator) => _mediator = mediator;
 
     public override void Configure()
     {
-        Put("/users/{UserIdToMute:Guid}/mute");
+        Put("/users/{UserId:Guid}/block");
         Policies("auth");
     }
 
-    public override async Task HandleAsync(MuteUserRequest req, CancellationToken ct)
+    public override async Task HandleAsync(BlockUserRequest req, CancellationToken ct)
     {
         var result = await _mediator.Execute(
-            new MuteUserCommand(req.UserIdToMute, Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes
+            new BlockUserCommand(req.UserId, Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes
             .NameIdentifier).Value)), ct);
 
         await result.On(

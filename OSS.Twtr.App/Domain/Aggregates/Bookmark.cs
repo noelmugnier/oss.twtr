@@ -23,4 +23,9 @@ public class Bookmark : Aggregate
     {
         return new Bookmark(userId, tweetId);
     }
+
+    public override void Remove()
+    {
+        RaiseEvent(new TweetUnbookmarked(UserId.Value, TweetId.Value));
+    }
 }

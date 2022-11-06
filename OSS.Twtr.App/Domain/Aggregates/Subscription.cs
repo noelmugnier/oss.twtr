@@ -22,6 +22,12 @@ public class Subscription : Aggregate
         return new Subscription(fromUserId, toUserId);
     }
 
+    public override void Remove()
+    {
+        RaiseEvent(new SubscriptionRemoved(SubscribedToUserId.Value, FollowerUserId.Value));
+        RaiseEvent(new FollowerRemoved(SubscribedToUserId.Value, FollowerUserId.Value));
+    }
+
     public UserId FollowerUserId { get; }
     public UserId SubscribedToUserId { get; }
     public DateTimeOffset SubscribedOn { get; } = DateTimeOffset.UtcNow;

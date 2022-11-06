@@ -23,4 +23,9 @@ public class Block : Aggregate
     {
         return new Block(userId, userIdToBlock);
     }
+
+    public override void Remove()
+    {
+        RaiseEvent(new UserUnblockBy(UserId.Value, UserIdToBlock.Value));
+    }
 }

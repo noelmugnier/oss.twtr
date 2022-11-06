@@ -7,7 +7,7 @@ namespace OSS.Twtr.Api.Features;
 
 public record FollowUserRequest
 {
-    public Guid UserIdToFollow { get; init; }
+    public Guid UserId { get; init; }
 }
 
 public sealed class FollowUserEndpoint : TwtrEndpoint<FollowUserRequest>
@@ -17,14 +17,14 @@ public sealed class FollowUserEndpoint : TwtrEndpoint<FollowUserRequest>
 
     public override void Configure()
     {
-        Put("/users/{UserIdToFollow:Guid}/follow");
+        Put("/users/{UserId:Guid}/follow");
         Policies("auth");
     }
 
     public override async Task HandleAsync(FollowUserRequest req, CancellationToken ct)
     {
         var result = await _mediator.Execute(
-            new FollowUserCommand(req.UserIdToFollow, Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value)), ct);
+            new FollowUserCommand(req.UserId, Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value)), ct);
 
         await result.On(
             success => SendOkAsync(cancellation: ct),

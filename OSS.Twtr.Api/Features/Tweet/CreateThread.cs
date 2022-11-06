@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using OSS.Twtr.App.Application;
+using OSS.Twtr.App.Domain.Enums;
 using OSS.Twtr.Application;
 using OSS.Twtr.Common.Infrastructure;
 
@@ -8,6 +9,7 @@ namespace OSS.Twtr.Api.Features;
 public record CreateThreadRequest
 {
     public IEnumerable<string> Messages { get; init; }
+    public TweetAllowedReplies AllowedReplies { get; init; }
 }
 
 public sealed class CreateThreadEndpoint : TwtrEndpoint<CreateThreadRequest, Guid>
@@ -25,7 +27,7 @@ public sealed class CreateThreadEndpoint : TwtrEndpoint<CreateThreadRequest, Gui
     {
         var result = await _mediator.Execute(
             new CreateThreadCommand(Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value),
-                req.Messages), ct);
+                req.Messages, req.AllowedReplies), ct);
 
         await result.On(
             threadId => SendOkAsync(cancellation: ct),

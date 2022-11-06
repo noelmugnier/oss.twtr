@@ -31,6 +31,7 @@ internal sealed class RemoveTweetHandler : ICommandHandler<RemoveTweetCommand, R
     public async Task<Result<Unit>> Handle(RemoveTweetCommand request, CancellationToken ct)
     {
         var tweet = await _repository.Set<Tweet>().SingleAsync(c => c.Id == TweetId.From(request.TweetId), ct);
+
         _repository.Remove(tweet);
         
         var results= await _repository.SaveChangesAsync(ct);

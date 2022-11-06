@@ -11,11 +11,12 @@ public class Tweet : Aggregate<TweetId>
     {
     }
 
-    private Tweet(TweetKind kind, string? message, UserId authorId, TweetId? referenceTweetId = null, ThreadId? threadId = null) 
+    private Tweet(TweetKind kind, string? message, TweetAllowedReplies allowedReplies, UserId authorId, TweetId? referenceTweetId = null, ThreadId? threadId = null) 
         : this()
     {
         Kind = kind;
         Message = message;
+        AllowedReplies = allowedReplies;
         PostedOn = DateTime.UtcNow;
         AuthorId = authorId;
         ReferenceTweetId = referenceTweetId;
@@ -26,42 +27,44 @@ public class Tweet : Aggregate<TweetId>
     }
 
 
-    public static Tweet Create(string message, UserId authorId) => new(TweetKind.Tweet, message, authorId);
+    public static Tweet Create(string message, UserId authorId, TweetAllowedReplies allowedReplies) => new(TweetKind
+    .Tweet, message, allowedReplies, authorId);
 
     public Tweet Reply(string message, UserId authorId)
     {
-        var reply = new Tweet(TweetKind.Reply, message, authorId, Id);
+        var reply = new Tweet(TweetKind.Reply, message, TweetAllowedReplies.All, authorId, Id);
         RaiseEvent(new TweetReplied(Id.Value, authorId.Value));
         return reply;
     }
 
     public Tweet Retweet(UserId authorId)
     {
-        var retweet = new Tweet(TweetKind.Retweet, null, authorId, Id);
+        var retweet = new Tweet(TweetKind.Retweet, null, TweetAllowedReplies.All, authorId, Id);
         RaiseEvent(new TweetRetweeted(Id.Value, authorId.Value));
         return retweet;
     }
 
-    public Tweet Quote(string? message, UserId authorId)
+    public Tweet Quote(string? message, UserId authorId, TweetAllowedReplies allowedReplies)
     {
-        var quote = new Tweet(TweetKind.Quote, message, authorId, Id);
+        var quote = new Tweet(TweetKind.Quote, message, allowedReplies, authorId, Id);
         RaiseEvent(new TweetQuoted(Id.Value, authorId.Value));
         return quote;
     }
 
-    public void Remove()
+    public override void Remove()
     {
         RaiseEvent(new TweetRemoved(Id.Value, AuthorId.Value));
     }
 
-    public static Tweet Create(ThreadId threadId, string message, UserId authorId)
+    public static Tweet Create(ThreadId threadId, string message, UserId authorId, TweetAllowedReplies allowedReplies)
     {
-        var tweet = new Tweet(TweetKind.Tweet, message, authorId, null, threadId);
+        var tweet = new Tweet(TweetKind.Tweet, message, allowedReplies, authorId, null, threadId);
         return tweet;
     }
 
     public TweetKind Kind { get; }
     public string? Message { get; }
+    public TweetAllowedReplies AllowedReplies { get; }
     public DateTime PostedOn { get; }
     public UserId AuthorId { get; }
     public TweetId? ReferenceTweetId { get; }

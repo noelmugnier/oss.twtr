@@ -23,4 +23,9 @@ public class Mute : Aggregate
     {
         return new Mute(userId, userIdToMute);
     }
+
+    public override void Remove()
+    {
+        RaiseEvent(new UserUnmutedBy(UserId.Value, UserIdToMute.Value));
+    }
 }

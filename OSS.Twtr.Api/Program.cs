@@ -44,8 +44,6 @@ app.UseSwaggerUi3(s =>
 app.Run();
 
 //TODO: Tweet visibility
-//TODO: Un-xxx support
-//TODO: PUT support on endpoint (idempotent)
 //TODO: parse tweet content (#, @, links)
 //TODO: Trending topics
 //TODO: Timelines
