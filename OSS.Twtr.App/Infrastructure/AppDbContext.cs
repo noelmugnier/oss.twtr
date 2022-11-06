@@ -101,7 +101,7 @@ public sealed class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
 
-            b.HasOne<Tweet>()
+            b.HasOne(c => c.ReferenceTweet)
                 .WithMany()
                 .HasForeignKey(c => c.ReferenceTweetId)
                 .OnDelete(DeleteBehavior.Restrict);
@@ -217,6 +217,22 @@ public sealed class AppDbContext : DbContext
 
             b.Ignore(c => c.DomainEvents);
             b.ToTable("MutedUsers");
+        });
+
+        modelBuilder.Entity<Token>(b =>
+        {
+            b.HasKey(c => c.Id);
+            b.Property(c => c.Value).IsRequired();
+            b.Property(c => c.CreatedOn);
+            b.Property(c => c.Kind);
+            b.Property(c => c.TweetId)
+                .HasConversion(id => id.Value, guid => TweetId.From(guid));
+
+            b.HasOne<Tweet>().WithMany()
+                .HasForeignKey(c => c.TweetId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            b.ToTable("Tokens");
         });
     }
 }

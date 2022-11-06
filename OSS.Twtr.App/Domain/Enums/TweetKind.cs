@@ -7,10 +7,3 @@ public enum TweetKind
     Quote,
     Reply,
 }
-
-public enum TweetAllowedReplies
-{
-    All,
-    Following,
-    Mentioned
-}

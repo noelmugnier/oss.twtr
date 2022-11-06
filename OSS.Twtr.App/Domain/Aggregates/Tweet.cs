@@ -68,5 +68,6 @@ public class Tweet : Aggregate<TweetId>
     public DateTime PostedOn { get; }
     public UserId AuthorId { get; }
     public TweetId? ReferenceTweetId { get; }
+    public Tweet? ReferenceTweet { get; }
     public ThreadId? ThreadId { get; }
 }

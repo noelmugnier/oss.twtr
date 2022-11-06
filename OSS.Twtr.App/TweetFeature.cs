@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using OSS.Twtr.App.Application;
 using OSS.Twtr.App.Domain.Repositories;
 using OSS.Twtr.App.Infrastructure;
 using OSS.Twtr.Application;
@@ -19,6 +20,8 @@ public class TweetFeature : IFeature
         services.AddDbContext<IReadDbContext, ReadDbContext>(c => 
             c.UseSqlServer(configuration.GetConnectionString("Data")));
 
+        services.AddScoped<ITweetTokenizer, TweetTokenizer>();
+        
         return services;
     }
 
