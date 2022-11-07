@@ -1,5 +1,7 @@
 using System.ComponentModel;
 using MediatR;
+using OSS.Twtr.Application;
+using OSS.Twtr.Domain;
 
 namespace OSS.Twtr.Infrastructure;
 
@@ -12,13 +14,13 @@ public class MediatorHangfireBridge
         _mediator = mediator;
     }
 
-    public async Task Send(IRequest command)
+    public async Task Execute<TRequest>(ICommand<TRequest> command)
     {
         await _mediator.Send(command);
     }
 
     [DisplayName("{0}")]
-    public async Task Send(string jobName, IRequest command)
+    public async Task Execute<TRequest>(string jobName, ICommand<TRequest> command)
     {
         await _mediator.Send(command);
     }

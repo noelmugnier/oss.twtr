@@ -39,7 +39,7 @@ internal sealed class TweetTokenizer : ITweetTokenizer
             }
         }
 
-        return tokens;
+        return tokens.Distinct();
     }
 
     private List<string> TokenizeRegexMatches(string pattern, string message)

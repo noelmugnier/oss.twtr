@@ -14,29 +14,48 @@ internal sealed class TokenizeTweetHandler : ICommandHandler<TokenizeTweetComman
 {
     private readonly AppDbContext _repository;
     private readonly ITweetTokenizer _tweetTokenizer;
+
     public TokenizeTweetHandler(AppDbContext repository, ITweetTokenizer tweetTokenizer)
-    { 
+    {
         _repository = repository;
         _tweetTokenizer = tweetTokenizer;
     }
 
     public async Task<Result<Unit>> Handle(TokenizeTweetCommand request, CancellationToken ct)
     {
-        var tweetMessage = await _repository.Set<Tweet>()
+        var tweet = await _repository.Set<Tweet>()
             .Where(t => t.Id == TweetId.From(request.TweetId))
-            .Select(t => t.Kind != TweetKind.Retweet ? t.Message : t.ReferenceTweet.Message)
             .SingleOrDefaultAsync(ct);
 
-        if (string.IsNullOrWhiteSpace(tweetMessage))
+        if (tweet == null)
             return new Result<Unit>(Unit.Value);
 
-        var tokens = _tweetTokenizer.TokenizeMessage(tweetMessage);
+        var tokens = new List<string>();
+        if (tweet.Kind == TweetKind.Retweet)
+        {
+            tokens = await _repository
+                .Set<Token>()
+                .Where(t => t.TweetId == tweet.ReferenceTweetId)
+                .Select(c => c.Value)
+                .ToListAsync(ct);
+        }
+        else
+        {
+            if (string.IsNullOrWhiteSpace(tweet.Message))
+                return new Result<Unit>(Unit.Value);
+
+            tokens = _tweetTokenizer.TokenizeMessage(tweet.Message).ToList();
+        }
+        
+        if(!tokens.Any())
+            return new Result<Unit>(Unit.Value);
 
         foreach (var token in tokens)
-            await _repository.Set<Token>()
-                .AddAsync(new Token(token, TweetId.From(request.TweetId)), ct);
+            await _repository.Set<Token>().AddAsync(new Token(token, tweet.Id), ct);
 
         var results = await _repository.SaveChangesAsync(ct);
-        return results > 0 ? new Result<Unit>(Unit.Value):new Result<Unit>(new Error("Failed to tokenize tweet message"));
+        return results > 0
+            ? new Result<Unit>(Unit.Value)
+            : new Result<Unit>(new Error("Failed to tokenize tweet message"));
     }
 }

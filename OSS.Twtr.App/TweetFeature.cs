@@ -1,3 +1,4 @@
+using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -6,6 +7,7 @@ using OSS.Twtr.App.Application;
 using OSS.Twtr.App.Domain.Repositories;
 using OSS.Twtr.App.Infrastructure;
 using OSS.Twtr.Application;
+using OSS.Twtr.Infrastructure;
 
 namespace OSS.Twtr.App;
 
@@ -21,7 +23,7 @@ public class TweetFeature : IFeature
             c.UseSqlServer(configuration.GetConnectionString("Data")));
 
         services.AddScoped<ITweetTokenizer, TweetTokenizer>();
-        
+
         return services;
     }
 
@@ -30,6 +32,11 @@ public class TweetFeature : IFeature
         using var scope = app.ApplicationServices.CreateScope();   
         var authContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         authContext.Database.Migrate();
+        
+        RecurringJob.AddOrUpdate<MediatorHangfireBridge>(
+            nameof(AnalyzeTrendsHandler),
+            handler => handler.Execute(nameof(AnalyzeTrendsCommand), new AnalyzeTrendsCommand(DateTime.UtcNow)),
+            Cron.Minutely);
 
         return app;
     }

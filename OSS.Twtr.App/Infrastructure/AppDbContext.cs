@@ -232,7 +232,16 @@ public sealed class AppDbContext : DbContext
                 .HasForeignKey(c => c.TweetId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            b.HasIndex(c => c.CreatedOn);
             b.ToTable("Tokens");
+        });
+        
+        modelBuilder.Entity<Trending>(b =>
+        {
+            b.HasKey(c => new {c.AnalyzedOn, c.Name});
+            b.Property(c => c.TweetCount);
+            
+            b.ToTable("Trendings");
         });
     }
 }

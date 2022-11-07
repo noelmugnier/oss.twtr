@@ -20,6 +20,7 @@ internal sealed class QuoteTweetValidator : AbstractValidator<QuoteTweetCommand>
             .WithMessage("You must specify a tweet to quote");
         
         RuleFor(x => x.Message)
+            .NotEmpty().WithMessage("Quoting a tweet require a message")
             .MaximumLength(140).WithMessage("Quote is limited to 140 characters");
         
         RuleFor(x => x.UserId).NotEqual(Guid.Empty)

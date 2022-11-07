@@ -58,8 +58,6 @@ app.UseHangfireDashboard();
 
 app.Run();
 
-//TODO: parse tweet content (#, @, links, names)
-//TODO: Trending topics
 //TODO: Timelines
 
 // --bonus--
