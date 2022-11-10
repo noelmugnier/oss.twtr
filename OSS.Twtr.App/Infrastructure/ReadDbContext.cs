@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OSS.Twtr.App.Domain.Entities;
 using OSS.Twtr.App.Domain.Enums;
 using OSS.Twtr.Application;
 
@@ -38,14 +39,53 @@ internal sealed class ReadDbContext : DbContext, IReadDbContext
             b.HasOne(c => c.Author)
                 .WithMany()
                 .HasForeignKey(c => c.AuthorId);
+            
+            b.HasMany(c => c.Likes)
+                .WithOne()
+                .HasForeignKey(c => c.TweetId);
 
             b.HasOne(c => c.ReferenceTweet)
-                .WithMany()
+                .WithMany(c => c.Retweets)
                 .HasForeignKey(c => c.ReferenceTweetId);
 
             b.Navigation(c => c.Author).AutoInclude();
 
             b.ToTable("Tweets");
+        });
+
+        modelBuilder.Entity<ReadOnlyTrend>(b =>
+        {
+            b.HasKey(u => new {u.AnalyzedOn, u.Name});
+            b.Property(c => c.TweetCount);
+            b.ToTable("Trendings");
+        });
+
+        modelBuilder.Entity<ReadOnlyLike>(b =>
+        {
+            b.HasKey(u => new {u.UserId, u.TweetId});
+            b.ToTable("Likes");
+        });
+
+        modelBuilder.Entity<ReadOnlyBlock>(b =>
+        {
+            b.HasKey(u => new {u.UserId, u.UserIdToBlock});
+            b.ToTable("Blocks");
+        });
+
+        modelBuilder.Entity<ReadOnlyMute>(b =>
+        {
+            b.HasKey(u => new {u.UserId, u.UserIdToMute});
+            b.ToTable("Mutes");
+        });
+
+        modelBuilder.Entity<ReadOnlyBookmark>(b =>
+        {
+            b.HasKey(u => new {u.UserId, u.TweetId});
+            b.HasOne(c => c.Tweet)
+                .WithMany()
+                .HasForeignKey(c => c.TweetId);
+            
+            b.ToTable("Bookmarks");
         });
     }
 
@@ -75,4 +115,38 @@ public record ReadOnlyTweet
     public Guid? ReferenceTweetId { get; }
     public Guid? ThreadId { get; }
     public ReadOnlyTweet? ReferenceTweet { get; }
+    public ICollection<ReadOnlyLike> Likes { get; }
+    public ICollection<ReadOnlyTweet> Retweets { get; }
+}
+
+public record ReadOnlyTrend
+{
+    public DateTime AnalyzedOn { get; set; }
+    public string Name { get; set; }
+    public int TweetCount { get; set; }
+}
+
+public record ReadOnlyLike
+{
+    public Guid UserId { get; }
+    public Guid TweetId { get; }
+}
+
+public record ReadOnlyBlock
+{
+    public Guid UserId { get; }
+    public Guid UserIdToBlock { get; }
+}
+
+public record ReadOnlyMute
+{
+    public Guid UserId { get; }
+    public Guid UserIdToMute { get; }
+}
+
+public record ReadOnlyBookmark
+{
+    public Guid UserId { get; }
+    public Guid TweetId { get; }
+    public ReadOnlyTweet Tweet { get; }
 }

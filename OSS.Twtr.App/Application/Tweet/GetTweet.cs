@@ -16,8 +16,7 @@ public sealed class GetTweetValidator : AbstractValidator<GetTweetQuery>
             .WithMessage("You must specify a tweet id");
     }
 }
-public record struct TweetDto(Guid Id, TweetKind Kind, string? Message, DateTime PostedOn, AuthorDto Author, 
-ReferenceTweetDto? ReferenceTweet, Guid? ThreadId);
+public record struct TweetDto(Guid Id, TweetKind Kind, string? Message, DateTime PostedOn, AuthorDto Author, ReferenceTweetDto? ReferenceTweet, Guid? ThreadId);
 public record struct ReferenceTweetDto(Guid Id, TweetKind Kind, string? Message, DateTime PostedOn, AuthorDto Author);
 public record struct AuthorDto(Guid Id, string UserName, string? DisplayName);
 
