@@ -1,5 +1,5 @@
+using System.Security.Claims;
 using FluentValidation;
-using Mapster;
 using OSS.Twtr.App.Application;
 using OSS.Twtr.Application;
 using OSS.Twtr.Common.Infrastructure;
@@ -32,7 +32,10 @@ public sealed class GetTweetEndpoint : TwtrEndpoint<GetTweetRequest, TweetDto>
 
     public override async Task HandleAsync(GetTweetRequest req, CancellationToken ct)
     {
-        var cmdResult = await _mediator.Execute(req.Adapt<GetTweetQuery>(), ct);
+        var cmdResult = await _mediator.Execute(new GetTweetQuery(User.Identity.IsAuthenticated
+            ? Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value)
+            : null, req.TweetId), ct);
+        
         await cmdResult.On(tweet => SendAsync(tweet, cancellation: ct),
             errors => SendResultErrorsAsync(errors, ct));
     }

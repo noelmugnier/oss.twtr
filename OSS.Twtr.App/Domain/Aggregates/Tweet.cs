@@ -62,6 +62,9 @@ public class Tweet : Aggregate<TweetId>
         return tweet;
     }
 
+    public int LikesCount { get; set; }
+    public int RetweetsCount { get; set; }
+
     public TweetKind Kind { get; }
     public string? Message { get; }
     public TweetAllowedReplies AllowedReplies { get; }

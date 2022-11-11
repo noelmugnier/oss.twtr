@@ -1,4 +1,6 @@
 using FluentValidation;
+using LinqToDB;
+using LinqToDB.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using OSS.Twtr.App.Domain.Enums;
 using OSS.Twtr.App.Infrastructure;
@@ -7,7 +9,8 @@ using OSS.Twtr.Core;
 
 namespace OSS.Twtr.App.Application;
 
-public record struct GetTweetRepliesQuery(Guid TweetId, string? ContinuationToken) : IQuery<Result<TweetsResultDto>>;
+public record struct GetTweetRepliesQuery(Guid? UserId, Guid TweetId, string? ContinuationToken) : 
+IQuery<Result<TweetsResultDto>>;
 public sealed class GetTweetRepliesValidator : AbstractValidator<GetTweetRepliesQuery>
 {
     public GetTweetRepliesValidator()
@@ -20,8 +23,8 @@ public sealed class GetTweetRepliesValidator : AbstractValidator<GetTweetReplies
 internal sealed class GetTweetRepliesHandler : IQueryHandler<GetTweetRepliesQuery, Result<TweetsResultDto>>
 {
     private readonly IContinuationTokenManager _continuationTokenManager;
-    private readonly IReadDbContext _db;
-    public GetTweetRepliesHandler(IContinuationTokenManager continuationTokenManager, IReadDbContext db)
+    private readonly ReadDbContext _db;
+    public GetTweetRepliesHandler(IContinuationTokenManager continuationTokenManager, ReadDbContext db)
     {
         _continuationTokenManager = continuationTokenManager;
         _db = db;
@@ -33,19 +36,47 @@ internal sealed class GetTweetRepliesHandler : IQueryHandler<GetTweetRepliesQuer
         {
             var (now, skip) = _continuationTokenManager.ReadContinuationToken(request.ContinuationToken);
             const int take = 20;
-            
-            var replies = await _db.Get<ReadOnlyTweet>()
-                .Where(t => t.ReferenceTweetId == request.TweetId)
-                .OrderBy(t => t.PostedOn)
-                .Select(c => 
-                    new TweetDto(c.Id, c.Kind, c.Message, c.PostedOn, new AuthorDto(c.Author.Id, c.Author.UserName, c.Author.DisplayName), null, c.ThreadId))
-                .Skip(skip)
-                .Take(take)
-                .ToListAsync(ct);
 
+            IQueryable<TweetDto> tweetQuery = null;
+
+            if (request.UserId.HasValue)
+                tweetQuery =
+                    from c in _db.Set<ReadOnlyTweet>()
+                    join a in _db.Set<ReadOnlyAuthor>() on c.AuthorId equals a.Id
+                    from l in _db.Set<ReadOnlyLike>()
+                        .LeftJoin(s => s.UserId == request.UserId.Value && s.TweetId == c.Id)
+                    from r in _db.Set<ReadOnlyTweet>()
+                        .LeftJoin(s => s.ReferenceTweetId == c.Id && s.Kind == TweetKind.Retweet && s.AuthorId ==
+                            request.UserId.Value)
+                    where c.ReferenceTweetId == request.TweetId
+                    orderby c.PostedOn
+                    select new TweetDto(c.Id, c.Kind, c.Message, c.PostedOn, new AuthorDto(c.Author.Id, c.Author
+                        .UserName, c.Author.DisplayName), c.ReferenceTweet != null
+                        ? new ReferenceTweetDto(c.ReferenceTweet.Id,
+                            c.ReferenceTweet.Kind, c.ReferenceTweet.Message, c.ReferenceTweet.PostedOn,
+                            new AuthorDto(c.ReferenceTweet.Author.Id, c.ReferenceTweet.Author.UserName,
+                                c.ReferenceTweet.Author.DisplayName))
+                        : null, c.ThreadId, l != null, r != null, c.LikesCount, c.RetweetsCount);
+            else
+                tweetQuery =
+                    from c in _db.Set<ReadOnlyTweet>()
+                    join a in _db.Set<ReadOnlyAuthor>() on c.AuthorId equals a.Id
+                    where c.ReferenceTweetId == request.TweetId
+                    orderby c.PostedOn
+                    select new TweetDto(c.Id, c.Kind, c.Message, c.PostedOn, new AuthorDto(c.Author.Id, c.Author
+                        .UserName, c.Author.DisplayName), c.ReferenceTweet != null
+                        ? new ReferenceTweetDto(c.ReferenceTweet.Id,
+                            c.ReferenceTweet.Kind, c.ReferenceTweet.Message, c.ReferenceTweet.PostedOn, new AuthorDto(c
+                                .ReferenceTweet.Author.Id, c.ReferenceTweet.Author.UserName, c.ReferenceTweet.Author
+                                .DisplayName))
+                        : null, c.ThreadId, false, false, c.LikesCount, c.RetweetsCount);
+
+            var replies = await tweetQuery.Skip(skip).Take(take).ToListAsyncLinqToDB(ct);
+                
             skip += take;
 
-            return new Result<TweetsResultDto>(new TweetsResultDto(replies, _continuationTokenManager.CreateContinuationToken(now, skip)));
+            return new Result<TweetsResultDto>(new TweetsResultDto(replies, _continuationTokenManager
+            .CreateContinuationToken(now, skip, replies.Count == take)));
         }
         catch (Exception e)
         {

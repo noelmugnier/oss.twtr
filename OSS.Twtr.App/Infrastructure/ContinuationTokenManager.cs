@@ -5,9 +5,9 @@ namespace OSS.Twtr.App.Application;
 
 public class ContinuationTokenManager : IContinuationTokenManager
 {
-    public string CreateContinuationToken(DateTime now, int skip)
+    public string? CreateContinuationToken(DateTime now, int skip, bool hasMore)
     {
-        return Convert.ToBase64String(Encoding.UTF8.GetBytes($"{now:s}_{skip}"));
+        return !hasMore ? null : Convert.ToBase64String(Encoding.UTF8.GetBytes($"{now:s}_{skip}"));
     }
 
     public (DateTime now, int skip) ReadContinuationToken(string? continuationToken)

@@ -35,6 +35,8 @@ internal sealed class ReadDbContext : DbContext, IReadDbContext
             b.Property(c => c.Message);
             b.Property(c => c.PostedOn);
             b.Property(c => c.ThreadId);
+            b.Property(c => c.LikesCount);
+            b.Property(c => c.RetweetsCount);
 
             b.HasOne(c => c.Author)
                 .WithMany()
@@ -129,6 +131,9 @@ public record ReadOnlyTweet
     public ReadOnlyTweet? ReferenceTweet { get; }
     public ICollection<ReadOnlyLike> Likes { get; }
     public ICollection<ReadOnlyTweet> Retweets { get; }
+
+    public int LikesCount { get; }
+    public int RetweetsCount { get; }
 }
 
 public record ReadOnlyTrend

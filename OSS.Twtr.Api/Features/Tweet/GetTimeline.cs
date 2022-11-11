@@ -32,6 +32,7 @@ public sealed class GetTimelineEndpoint : TwtrEndpoint<GetTimelineRequest, GetTi
         var cmdResult = await _mediator.Execute(new GetTimelineQuery(User.Identity.IsAuthenticated
             ? Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value)
             : null, req.ContinuationToken), ct);
+        
         await cmdResult.On(result => SendAsync(new GetTimelineResponse
             {
                 Tweets = result.Tweets,

@@ -71,6 +71,7 @@ public sealed class AppDbContext : DbContext
             b.HasOne<Tweet>().WithOne().HasForeignKey<Author>(c => c.PinnedTweetId);
 
             b.Ignore(c => c.DomainEvents);
+            b.Property<byte[]>("RowVersion").IsRowVersion();
 
             b.ToTable("Users");
         });
@@ -86,6 +87,8 @@ public sealed class AppDbContext : DbContext
             b.Property(t => t.Message);
             b.Property(t => t.PostedOn).IsRequired();
             b.Property(t => t.AuthorId).IsRequired();
+            b.Property(t => t.LikesCount).IsRequired().HasDefaultValue(0);
+            b.Property(t => t.RetweetsCount).IsRequired().HasDefaultValue(0);
             b.Property(t => t.ThreadId)
                 .HasConversion(
                     id => id != null ? id.Value : (Guid?) null, 
@@ -107,6 +110,7 @@ public sealed class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict);
 
             b.Ignore(c => c.DomainEvents);
+            b.Property<byte[]>("RowVersion").IsRowVersion();
 
             b.ToTable("Tweets");
         });
