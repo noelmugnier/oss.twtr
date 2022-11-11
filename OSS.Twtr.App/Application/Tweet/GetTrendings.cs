@@ -15,8 +15,8 @@ public record struct TrendingDto
 
 internal sealed class GetTrendingsHandler : IQueryHandler<GetTrendingsQuery, Result<IEnumerable<TrendingDto>>>
 {
-    private readonly IReadDbContext _db;
-    public GetTrendingsHandler(IReadDbContext db) => _db = db;
+    private readonly ReadDbContext _db;
+    public GetTrendingsHandler(ReadDbContext db) => _db = db;
 
     public async Task<Result<IEnumerable<TrendingDto>>> Handle(GetTrendingsQuery request, CancellationToken ct)
     {
@@ -26,7 +26,7 @@ internal sealed class GetTrendingsHandler : IQueryHandler<GetTrendingsQuery, Res
             const int take = 10;
             const int minTweetsCountToBeTrending = 5;
 
-            var trends = await _db.Get<ReadOnlyTrend>()
+            var trends = await _db.Set<ReadOnlyTrend>()
                 .Where(x => x.AnalyzedOn > now)
                 .GroupBy(x => x.Name)
                 .Where(x => x.Sum(t => t.TweetCount) > minTweetsCountToBeTrending)

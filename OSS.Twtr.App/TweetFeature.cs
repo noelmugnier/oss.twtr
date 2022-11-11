@@ -19,7 +19,7 @@ public class TweetFeature : IFeature
             c.UseSqlServer(configuration.GetConnectionString("Data"), 
                 options => options.MigrationsAssembly(typeof(TweetFeature).Assembly.FullName)));
         
-        services.AddDbContext<IReadDbContext, ReadDbContext>(c => 
+        services.AddDbContext<ReadDbContext>(c => 
             c.UseSqlServer(configuration.GetConnectionString("Data")));
 
         services.AddScoped<ITweetTokenizer, TweetTokenizer>();

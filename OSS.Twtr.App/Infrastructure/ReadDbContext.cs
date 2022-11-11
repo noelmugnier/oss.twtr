@@ -5,7 +5,7 @@ using OSS.Twtr.Application;
 
 namespace OSS.Twtr.App.Infrastructure;
 
-internal sealed class ReadDbContext : DbContext, IReadDbContext
+internal sealed class ReadDbContext : DbContext
 {
     public ReadDbContext(DbContextOptions<ReadDbContext> options) : base(options)
     {
@@ -95,11 +95,6 @@ internal sealed class ReadDbContext : DbContext, IReadDbContext
             
             b.ToTable("Bookmarks");
         });
-    }
-
-    public IQueryable<T> Get<T>() where T : class
-    {
-        return Set<T>().AsQueryable();
     }
 }
 
