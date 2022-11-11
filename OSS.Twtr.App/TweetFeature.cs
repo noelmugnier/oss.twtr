@@ -23,6 +23,7 @@ public class TweetFeature : IFeature
             c.UseSqlServer(configuration.GetConnectionString("Data")));
 
         services.AddScoped<ITweetTokenizer, TweetTokenizer>();
+        services.AddScoped<IContinuationTokenManager, ContinuationTokenManager>();
 
         return services;
     }

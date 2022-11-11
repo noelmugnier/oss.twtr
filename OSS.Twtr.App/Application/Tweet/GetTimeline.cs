@@ -1,3 +1,5 @@
+using LinqToDB;
+using LinqToDB.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using OSS.Twtr.App.Domain.Enums;
 using OSS.Twtr.App.Infrastructure;
@@ -23,8 +25,8 @@ public record struct TweetsResultDto
 internal sealed class GetTimelineHandler : IQueryHandler<GetTimelineQuery, Result<TweetsResultDto>>
 {
     private readonly IContinuationTokenManager _continuationTokenManager;
-    private readonly IReadDbContext _db;
-    public GetTimelineHandler(IContinuationTokenManager continuationTokenManager, IReadDbContext db)
+    private readonly ReadDbContext _db;
+    public GetTimelineHandler(IContinuationTokenManager continuationTokenManager, ReadDbContext db)
     {
         _continuationTokenManager = continuationTokenManager;
         _db = db;
@@ -36,24 +38,33 @@ internal sealed class GetTimelineHandler : IQueryHandler<GetTimelineQuery, Resul
         {
             var (now, skip) = _continuationTokenManager.ReadContinuationToken(request.ContinuationToken);
             const int take = 20;
+
+            IQueryable<TweetDto> tweets = null;
             
-            var tweets = await _db.Get<ReadOnlyTweet>()
-                .Where(t => t.PostedOn <= now && t.Kind != TweetKind.Reply)
-                .OrderByDescending(t=> t.PostedOn)
-                .Select(c => new TweetDto(c.Id, c.Kind, c.Message, c.PostedOn, new AuthorDto(c.Author.Id, c.Author
-                    .UserName, c.Author.DisplayName ?? c.Author.UserName), c.ReferenceTweet != null ? new ReferenceTweetDto(c
-                    .ReferenceTweet.Id, 
-                    c.ReferenceTweet.Kind, c.ReferenceTweet.Message, c.ReferenceTweet.PostedOn, 
-                    new AuthorDto(c
-                    .ReferenceTweet.Author.Id, c.ReferenceTweet.Author.UserName, c.ReferenceTweet.Author.DisplayName 
-                    ?? c.ReferenceTweet.Author.UserName)) : null, c.ThreadId))
-                .Skip(skip)
-                .Take(take)
-                .ToListAsync(ct);
+            if(request.UserId.HasValue)
+                tweets = from c in _db.Set<ReadOnlyTweet>()
+                        join a in _db.Set<ReadOnlyAuthor>() on c.AuthorId equals a.Id
+                        from f in _db.Set<ReadOnlySubscription>()
+                            .LeftJoin(s => s.FollowerUserId == request.UserId.Value && s.SubscribedToUserId == a.Id)
+                        where f != null && c.PostedOn <= now && c.Kind != TweetKind.Reply
+                        orderby c.PostedOn descending
+                        select new TweetDto(c.Id, c.Kind, c.Message, c.PostedOn, new AuthorDto(c.Author.Id, c.Author
+                            .UserName, c.Author.DisplayName), c.ReferenceTweet != null ? new ReferenceTweetDto(c.ReferenceTweet.Id, 
+                            c.ReferenceTweet.Kind, c.ReferenceTweet.Message, c.ReferenceTweet.PostedOn, new AuthorDto(c.ReferenceTweet.Author.Id, c.ReferenceTweet.Author.UserName, c.ReferenceTweet.Author.DisplayName)) : null, c.ThreadId);
+            else
+                tweets = from c in _db.Set<ReadOnlyTweet>()
+                    join a in _db.Set<ReadOnlyAuthor>() on c.AuthorId equals a.Id
+                    where c.PostedOn <= now && c.Kind != TweetKind.Reply
+                    orderby c.PostedOn descending
+                    select new TweetDto(c.Id, c.Kind, c.Message, c.PostedOn, new AuthorDto(c.Author.Id, c.Author
+                        .UserName, c.Author.DisplayName), c.ReferenceTweet != null ? new ReferenceTweetDto(c.ReferenceTweet.Id, 
+                        c.ReferenceTweet.Kind, c.ReferenceTweet.Message, c.ReferenceTweet.PostedOn, new AuthorDto(c.ReferenceTweet.Author.Id, c.ReferenceTweet.Author.UserName, c.ReferenceTweet.Author.DisplayName)) : null, c.ThreadId);
+
+            var results = await tweets.Skip(skip).Take(take).ToListAsyncLinqToDB(ct);
 
             skip += take;
 
-            return new Result<TweetsResultDto>(new TweetsResultDto(tweets, _continuationTokenManager
+            return new Result<TweetsResultDto>(new TweetsResultDto(results, _continuationTokenManager
                 .CreateContinuationToken(now, skip)));
         }
         catch (Exception e)

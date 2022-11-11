@@ -51,7 +51,7 @@ export default function () {
     let count = 0;
     while(count < 10) {
         const payloadTweet = JSON.stringify({
-            message: count + ': super test for user: ' + 'superUser_' + date + '_' + exec.vu.idInTest,
+            message: `${count}: super test for user: superUser_${date}_{exec.vu.idInTest}`,
         });
         
         let resTweet = http.post(urlTweet, payloadTweet, paramsloginurl);

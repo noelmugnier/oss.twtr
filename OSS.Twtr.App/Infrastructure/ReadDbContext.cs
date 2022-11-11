@@ -78,6 +78,12 @@ internal sealed class ReadDbContext : DbContext, IReadDbContext
             b.ToTable("Mutes");
         });
 
+        modelBuilder.Entity<ReadOnlySubscription>(b =>
+        {
+            b.HasKey(u => new {u.FollowerUserId, u.SubscribedToUserId});
+            b.ToTable("Subscriptions");
+        });
+
         modelBuilder.Entity<ReadOnlyBookmark>(b =>
         {
             b.HasKey(u => new {u.UserId, u.TweetId});
@@ -102,6 +108,12 @@ public record ReadOnlyAuthor
     public string? DisplayName { get; }
     public string? Email { get; }
     public DateTime MemberSince { get; }
+}
+
+public record ReadOnlySubscription
+{
+    public Guid FollowerUserId { get; }
+    public Guid SubscribedToUserId { get; }
 }
 
 public record ReadOnlyTweet

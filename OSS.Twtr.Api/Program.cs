@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using Hangfire;
+using LinqToDB.EntityFrameworkCore;
 using Newtonsoft.Json;
 using OSS.Twtr;
 using OSS.Twtr.Api;
@@ -30,6 +31,7 @@ builder.Services.AddHangfire(configuration =>
 });
 
 builder.Services.AddHangfireServer();
+LinqToDBForEFTools.Initialize();
 
 var app = builder.Build();
 
