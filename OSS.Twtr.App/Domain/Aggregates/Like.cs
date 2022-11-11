@@ -26,6 +26,6 @@ public class Like : Aggregate
 
     public override void Remove()
     {
-        RaiseEvent(new TweetUnliked(UserId.Value, TweetId.Value));
+        RaiseEvent(new TweetUnliked(TweetId.Value, UserId.Value));
     }
 }

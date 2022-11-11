@@ -2,6 +2,9 @@ namespace OSS.Twtr.App.Application;
 
 internal static class StopWords
 {
+    public static List<string> Punctuations = new List<string> { "!", "?", ".", ",", ";", ":", "(", ")", "[", "]", "{", 
+    "}", "/", "\"", "\\", "\t", "\r", "\n" };
+    
     public static List<string> FR = new List<string>{
         "a",
         "abord",

@@ -17,9 +17,9 @@ public class Subscription : Aggregate
         RaiseEvent(new FollowerAdded(subscribedToUserId.Value, followerUserId.Value));
     }
 
-    public static Subscription CreateSubscription(UserId fromUserId, UserId toUserId)
+    public static Subscription CreateSubscription(UserId followerUserId, UserId userToFollowId)
     {
-        return new Subscription(fromUserId, toUserId);
+        return new Subscription(followerUserId, userToFollowId);
     }
 
     public override void Remove()

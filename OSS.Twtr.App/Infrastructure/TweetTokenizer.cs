@@ -24,7 +24,11 @@ internal sealed class TweetTokenizer : ITweetTokenizer
         var tokens = new List<string>();
         foreach (var token in words)
         {
-            if (StopWords.FR.Contains(token) || keywordsCount > 1)
+            var tokenCleaned = token;
+            StopWords.Punctuations
+                .ForEach(punctuation => tokenCleaned = tokenCleaned.Replace(punctuation, string.Empty));
+            
+            if (StopWords.FR.Contains(tokenCleaned) || keywordsCount > 1)
             {
                 if (!string.IsNullOrWhiteSpace(keywords))
                     tokens.Add(keywords);
@@ -34,7 +38,7 @@ internal sealed class TweetTokenizer : ITweetTokenizer
             }
             else
             {
-                keywords += keywords.Length > 0 ? " " + token : token;
+                keywords += keywords.Length > 0 ? " " + tokenCleaned : tokenCleaned;
                 keywordsCount++;
             }
         }

@@ -26,6 +26,6 @@ public class Mute : Aggregate
 
     public override void Remove()
     {
-        RaiseEvent(new UserUnmutedBy(UserId.Value, UserIdToMute.Value));
+        RaiseEvent(new UserUnmutedBy(UserIdToMute.Value, UserId.Value));
     }
 }
