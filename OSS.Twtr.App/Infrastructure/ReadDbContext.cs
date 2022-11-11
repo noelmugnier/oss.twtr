@@ -42,12 +42,12 @@ internal sealed class ReadDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(c => c.AuthorId);
             
-            b.HasMany(c => c.Likes)
+            b.HasMany<ReadOnlyLike>()
                 .WithOne()
                 .HasForeignKey(c => c.TweetId);
 
             b.HasOne(c => c.ReferenceTweet)
-                .WithMany(c => c.Retweets)
+                .WithMany()
                 .HasForeignKey(c => c.ReferenceTweetId);
 
             b.Navigation(c => c.Author).AutoInclude();
@@ -124,9 +124,6 @@ public record ReadOnlyTweet
     public Guid? ReferenceTweetId { get; }
     public Guid? ThreadId { get; }
     public ReadOnlyTweet? ReferenceTweet { get; }
-    public ICollection<ReadOnlyLike> Likes { get; }
-    public ICollection<ReadOnlyTweet> Retweets { get; }
-
     public int LikesCount { get; }
     public int RetweetsCount { get; }
 }
