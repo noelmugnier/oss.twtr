@@ -43,8 +43,8 @@ internal sealed class RetweetHandler : ICommandHandler<RetweetCommand, Result<Un
         if(tweet == null)
             return new Result<Unit>(new Error("Tweet not found"));
         
-        var quote = tweet.Retweet(UserId.From(request.UserId));
-        await _repository.AddAsync(quote, ct);    
+        var retweet = tweet.Retweet(UserId.From(request.UserId));
+        await _repository.AddAsync(retweet, ct);    
 
         tweet.RetweetsCount++;
         

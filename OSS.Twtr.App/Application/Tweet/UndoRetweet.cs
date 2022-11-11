@@ -38,10 +38,46 @@ internal sealed class UndoRetweetHandler : ICommandHandler<UndoRetweetCommand, R
 
         if (tweet == null)
             return new Result<Unit>(Unit.Value);
+        
+        _repository.Remove(tweet);    
 
-        _repository.Remove(tweet);
+        var originalTweet = await _repository.Set<Tweet>().SingleOrDefaultAsync(c => c.Id == tweet.ReferenceTweetId, ct);
+        if(originalTweet == null)
+            return new Result<Unit>(Unit.Value);
+        
+        originalTweet.RetweetsCount--;
+        
+        var results = 0;
+        while(results == 0)
+        {
+            try
+            {
+                results = await _repository.SaveChangesAsync(ct);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                foreach (var entry in ex.Entries)
+                {
+                    if (entry.Entity is not Tweet) continue;
+                    
+                    var proposedValues = entry.CurrentValues;
+                    var databaseValues = await entry.GetDatabaseValuesAsync(ct);
 
-        var results = await _repository.SaveChangesAsync(ct);
+                    foreach (var property in proposedValues.Properties)
+                    {
+                        var proposedValue = proposedValues[property];
+                        var databaseValue = databaseValues[property];
+
+                        if(property.Name == nameof(Tweet.RetweetsCount))
+                            proposedValues[property] = (int)databaseValue - 1;
+                    }
+
+                    // Refresh original values to bypass next concurrency check
+                    entry.OriginalValues.SetValues(databaseValues);
+                }
+            }
+        }
+        
         return results > 0 ? new Result<Unit>(Unit.Value) : new Result<Unit>(new Error("Failed to undo retweet"));
     }
 }
