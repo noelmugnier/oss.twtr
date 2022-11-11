@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using OSS.Twtr.App.Application;
 using OSS.Twtr.Application;
 using OSS.Twtr.Common.Infrastructure;
@@ -28,7 +29,7 @@ public sealed class GetTimelineEndpoint : TwtrEndpoint<GetTimelineRequest, GetTi
 
     public override async Task HandleAsync(GetTimelineRequest req, CancellationToken ct)
     {
-        var cmdResult = await _mediator.Execute(new GetTimelineQuery(req.ContinuationToken), ct);
+        var cmdResult = await _mediator.Execute(new GetTimelineQuery(Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value), req.ContinuationToken), ct);
         await cmdResult.On(result => SendAsync(new GetTimelineResponse
             {
                 Tweets = result.Tweets,

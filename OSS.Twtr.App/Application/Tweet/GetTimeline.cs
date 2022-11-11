@@ -1,8 +1,4 @@
-using System.Buffers.Text;
-using System.Text;
-using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using OSS.Twtr.App.Domain.Entities;
 using OSS.Twtr.App.Domain.Enums;
 using OSS.Twtr.App.Infrastructure;
 using OSS.Twtr.Application;
@@ -10,33 +6,36 @@ using OSS.Twtr.Core;
 
 namespace OSS.Twtr.App.Application;
 
-public record struct GetTimelineQuery(string? ContinuationToken) : IQuery<Result<TimeLineResultDto>>;
+public record struct GetTimelineQuery(Guid? UserId, string? ContinuationToken) : IQuery<Result<TweetsResultDto>>;
 
-public record struct TimeLineResultDto
+public record struct TweetsResultDto
 {
-    public string ContinuationToken { get; set; }
-    public List<TweetDto> Tweets { get; set; }
+    public TweetsResultDto(List<TweetDto> tweets, string? continuationToken)
+    {
+        Tweets = tweets;
+        ContinuationToken = Tweets != null && Tweets.Any() ? continuationToken : null;
+    }
+    
+    public string ContinuationToken { get;  }
+    public List<TweetDto> Tweets { get; }
 }
 
-internal sealed class GetTimelineHandler : IQueryHandler<GetTimelineQuery, Result<TimeLineResultDto>>
+internal sealed class GetTimelineHandler : IQueryHandler<GetTimelineQuery, Result<TweetsResultDto>>
 {
+    private readonly IContinuationTokenManager _continuationTokenManager;
     private readonly IReadDbContext _db;
-    public GetTimelineHandler(IReadDbContext db) => _db = db;
+    public GetTimelineHandler(IContinuationTokenManager continuationTokenManager, IReadDbContext db)
+    {
+        _continuationTokenManager = continuationTokenManager;
+        _db = db;
+    }
 
-    public async Task<Result<TimeLineResultDto>> Handle(GetTimelineQuery request, CancellationToken ct)
+    public async Task<Result<TweetsResultDto>> Handle(GetTimelineQuery request, CancellationToken ct)
     {
         try
         {
-            var now = DateTime.UtcNow;
-            var skip = 0;
+            var (now, skip) = _continuationTokenManager.ReadContinuationToken(request.ContinuationToken);
             const int take = 20;
-
-            if (!string.IsNullOrWhiteSpace(request.ContinuationToken))
-            {
-                var tokens = Encoding.UTF8.GetString(Convert.FromBase64String(request.ContinuationToken)).Split("_");
-                now = DateTime.Parse(tokens[0]);
-                skip = int.Parse(tokens[1]);
-            }
             
             var tweets = await _db.Get<ReadOnlyTweet>()
                 .Where(t => t.PostedOn <= now && t.Kind != TweetKind.Reply)
@@ -54,15 +53,12 @@ internal sealed class GetTimelineHandler : IQueryHandler<GetTimelineQuery, Resul
 
             skip += take;
 
-            return new Result<TimeLineResultDto>(new TimeLineResultDto
-            {
-                Tweets = tweets,
-                ContinuationToken = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{now:s}_{skip}"))
-            });
+            return new Result<TweetsResultDto>(new TweetsResultDto(tweets, _continuationTokenManager
+                .CreateContinuationToken(now, skip)));
         }
         catch (Exception e)
         {
-            return new Result<TimeLineResultDto>(e);
+            return new Result<TweetsResultDto>(e);
         }
     }
 }
