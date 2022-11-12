@@ -1,4 +1,5 @@
 using FluentValidation;
+using LinqToDB.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using OSS.Twtr.App.Domain.Entities;
 using OSS.Twtr.App.Domain.Enums;
@@ -35,6 +36,10 @@ internal sealed class ReplyToTweetHandler : ICommandHandler<ReplyToTweetCommand,
     public async Task<Result<Unit>> Handle(ReplyToTweetCommand request, CancellationToken ct)
     {
         var tweet = await _repository.Set<Tweet>().SingleAsync(c => c.Id == TweetId.From(request.TweetId), ct);
+        var block = await _repository.Set<Block>().SingleOrDefaultAsync(c => c.UserId == tweet.AuthorId && c.UserIdToBlock == UserId.From(request.UserId), ct);
+        if (block != null)
+            return new Result<Unit>(new Error("Cannot reply to this tweet, author blocked you"));
+        
         var canReplyResult = tweet.AllowedReplies switch
         {
             TweetAllowedReplies.Following => await CheckIfReplierIsFollowedByAuthor(UserId.From(request.UserId), tweet.AuthorId, ct),

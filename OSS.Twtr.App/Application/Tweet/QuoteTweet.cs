@@ -36,6 +36,10 @@ internal sealed class QuoteTweetHandler : ICommandHandler<QuoteTweetCommand, Res
     public async Task<Result<Unit>> Handle(QuoteTweetCommand request, CancellationToken ct)
     {
         var tweet = await _repository.Set<Tweet>().SingleAsync(c => c.Id == TweetId.From(request.TweetId), ct);
+        var block = await _repository.Set<Block>().SingleOrDefaultAsync(c => c.UserId == tweet.AuthorId && c.UserIdToBlock == UserId.From(request.UserId), ct);
+        if (block != null)
+            return new Result<Unit>(new Error("Cannot quote this tweet, author blocked you"));
+        
         var quote = tweet.Quote(request.Message, UserId.From(request.UserId), request.AllowedReplies);
         
         await _repository.AddAsync(quote, ct);    

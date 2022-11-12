@@ -43,6 +43,10 @@ internal sealed class RetweetHandler : ICommandHandler<RetweetCommand, Result<Un
         if(tweet == null)
             return new Result<Unit>(new Error("Tweet not found"));
         
+        var block = await _repository.Set<Block>().SingleOrDefaultAsync(c => c.UserId == tweet.AuthorId && c.UserIdToBlock == UserId.From(request.UserId), ct);
+        if (block != null)
+            return new Result<Unit>(new Error("Cannot retweet this tweet, author blocked you"));
+        
         var retweet = tweet.Retweet(UserId.From(request.UserId));
         await _repository.AddAsync(retweet, ct);    
 
