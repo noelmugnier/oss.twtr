@@ -60,8 +60,6 @@ app.UseHangfireDashboard();
 
 app.Run();
 
-//TODO: Timelines
-
 // --bonus--
 //TODO: Lists support
 //TODO: Edit account
