@@ -71,13 +71,13 @@ internal sealed class ReadDbContext : DbContext
         modelBuilder.Entity<ReadOnlyBlock>(b =>
         {
             b.HasKey(u => new {u.UserId, u.UserIdToBlock});
-            b.ToTable("Blocks");
+            b.ToTable("BlockedUsers");
         });
 
         modelBuilder.Entity<ReadOnlyMute>(b =>
         {
             b.HasKey(u => new {u.UserId, u.UserIdToMute});
-            b.ToTable("Mutes");
+            b.ToTable("MutedUsers");
         });
 
         modelBuilder.Entity<ReadOnlySubscription>(b =>

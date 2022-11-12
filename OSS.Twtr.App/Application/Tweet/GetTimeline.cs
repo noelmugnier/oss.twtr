@@ -51,8 +51,9 @@ internal sealed class GetTimelineHandler : IQueryHandler<GetTimelineQuery, Resul
                         from r in _db.Set<ReadOnlyTweet>()
                             .LeftJoin(s => s.ReferenceTweetId == c.Id && s.Kind == TweetKind.Retweet && s.AuthorId ==
                              request.UserId.Value)
-                        where (f != null || c.AuthorId == request.UserId.Value) && c.PostedOn <= now && c.Kind != 
-                        TweetKind.Reply
+                        from m in _db.Set<ReadOnlyMute>()
+                            .LeftJoin(s => s.UserId == request.UserId.Value && s.UserIdToMute == a.Id)
+                        where ((f != null && m == null) || c.AuthorId == request.UserId.Value) && c.PostedOn <= now && c.Kind != TweetKind.Reply
                         orderby c.PostedOn descending
                         select new TweetDto(c.Id, c.Kind, c.Message, c.PostedOn, new AuthorDto(c.Author.Id, c.Author
                             .UserName, c.Author.DisplayName), c.ReferenceTweet != null ? new ReferenceTweetDto(c.ReferenceTweet.Id, 
