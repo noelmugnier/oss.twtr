@@ -60,7 +60,9 @@ app.UseHangfireDashboard();
 
 app.Run();
 
-// --bonus--
-//TODO: Lists support
-//TODO: Edit account
+//TODO: Edit account (url, job, location, bio, birthdate)
 //TODO: account picture
+
+// --bonus--
+//TODO: messages
+//TODO: Lists support
