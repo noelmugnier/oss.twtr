@@ -43,7 +43,7 @@ internal sealed class GetTimelineHandler : IQueryHandler<GetTimelineQuery, Resul
             
             if(request.UserId.HasValue)
                 tweets = from c in _db.Set<ReadOnlyTweet>()
-                        join a in _db.Set<ReadOnlyAuthor>() on c.AuthorId equals a.Id
+                        join a in _db.Set<ReadOnlyUser>() on c.AuthorId equals a.Id
                         from f in _db.Set<ReadOnlySubscription>()
                             .LeftJoin(s => s.FollowerUserId == request.UserId.Value && s.SubscribedToUserId == a.Id)
                         from l in _db.Set<ReadOnlyLike>()
@@ -63,7 +63,7 @@ internal sealed class GetTimelineHandler : IQueryHandler<GetTimelineQuery, Resul
                             .DisplayName)) : null, c.ThreadId, l != null, r != null, c.LikesCount, c.RetweetsCount);
             else
                 tweets = from c in _db.Set<ReadOnlyTweet>()
-                    join a in _db.Set<ReadOnlyAuthor>() on c.AuthorId equals a.Id
+                    join a in _db.Set<ReadOnlyUser>() on c.AuthorId equals a.Id
                     from l in _db.Set<ReadOnlyLike>()
                         .LeftJoin(s => s.UserId == request.UserId.Value && s.TweetId == c.Id)
                     from r in _db.Set<ReadOnlyTweet>()

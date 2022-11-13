@@ -30,7 +30,7 @@ internal sealed class UnpinTweetHandler : ICommandHandler<UnpinTweetCommand, Res
 
     public async Task<Result<Unit>> Handle(UnpinTweetCommand request, CancellationToken ct)
     {
-        var author = await _repository.Set<Author>().SingleAsync(b => 
+        var author = await _repository.Set<User>().SingleAsync(b => 
             b.Id == UserId.From(request.UserId), ct);
         
         author.UnpinTweet(TweetId.From(request.TweetId));

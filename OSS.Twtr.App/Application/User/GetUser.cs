@@ -11,8 +11,8 @@ using OSS.Twtr.Core;
 namespace OSS.Twtr.App.Application;
 
 public record struct GetUserQuery(Guid UserIdToRetrieve, Guid? UserId) : IQuery<Result<UserDto>>;
-public record struct UserDto(Guid Id, string UserName, string DisplayName, DateTime MemberSince, int FollowingCount, int
-    FollowedByCount, bool Followed, bool Blocked, bool Muted);
+public record struct UserDto(Guid Id, string UserName, string DisplayName, DateTime MemberSince, string? Job, string? 
+Description, string? Url, DateTime? BirthDate, string? Location, int FollowingCount, int FollowedByCount, bool Followed, bool Blocked, bool Muted);
 
 public sealed class GetUserValidator : AbstractValidator<GetUserQuery>
 {
@@ -33,7 +33,7 @@ internal sealed class GetUserHandler : IQueryHandler<GetUserQuery, Result<UserDt
         IQueryable<UserDto> userQuery;
         
         if(request.UserId.HasValue)
-            userQuery = from author in _repository.Set<ReadOnlyAuthor>()
+            userQuery = from author in _repository.Set<ReadOnlyUser>()
                 from followed in _repository.Set<ReadOnlySubscription>()
                     .LeftJoin(s => s.FollowerUserId == request.UserId && s.SubscribedToUserId == author.Id)
                 from blocked in _repository.Set<ReadOnlyBlock>()
@@ -44,20 +44,22 @@ internal sealed class GetUserHandler : IQueryHandler<GetUserQuery, Result<UserDt
                     .LeftJoin(s => s.FollowerUserId == author.Id || s.SubscribedToUserId == author.Id)
                 where author.Id == request.UserIdToRetrieve
                 group new { subscription, followed, blocked, muted} by author into g
-                select new UserDto(g.Key.Id, g.Key.UserName, g.Key.DisplayName, g.Key.MemberSince, 
+                select new UserDto(g.Key.Id, g.Key.UserName, g.Key.DisplayName, g.Key.MemberSince, g.Key.Job, 
+                    g.Key.Description, g.Key.Url, g.Key.BirthDate, g.Key.Location,
                     g.Count(s => s.subscription.FollowerUserId == g.Key.Id), 
                     g.Count(s => s.subscription.SubscribedToUserId == g.Key.Id), 
                     g.Count(c => c.followed != null) > 0, 
                     g.Count(s => s.blocked != null) > 0, 
                     g.Count(s => s.muted != null) > 0);
         else
-            userQuery = from author in _repository.Set<ReadOnlyAuthor>()
+            userQuery = from author in _repository.Set<ReadOnlyUser>()
                 from subscription in _repository.Set<ReadOnlySubscription>()
                     .LeftJoin(s => s.FollowerUserId == author.Id || s.SubscribedToUserId == author.Id)
                 where author.Id == request.UserIdToRetrieve
                 group subscription by author
                 into g
-                select new UserDto(g.Key.Id, g.Key.UserName, g.Key.DisplayName, g.Key.MemberSince, 
+                select new UserDto(g.Key.Id, g.Key.UserName, g.Key.DisplayName, g.Key.MemberSince, g.Key.Job, 
+                    g.Key.Description, g.Key.Url, g.Key.BirthDate, g.Key.Location,
                     g.Count(s => s.FollowerUserId == g.Key.Id), 
                     g.Count(s => s.SubscribedToUserId == g.Key.Id), 
                     false, false, false);

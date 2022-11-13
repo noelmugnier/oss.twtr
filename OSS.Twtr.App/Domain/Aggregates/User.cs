@@ -4,15 +4,19 @@ using OSS.Twtr.Domain;
 
 namespace OSS.Twtr.App.Domain.Entities;
 
-public class Author : Aggregate<UserId>
+public class User : Aggregate<UserId>
 {
-    private Author() : base(UserId.New())
+    private User() : base(UserId.New())
     {
     }
     
     public string UserName { get; }
-    public string? DisplayName { get; }
-    public string? Email { get; }
+    public string? DisplayName { get; set; }
+    public string? Job { get; set; }
+    public string? Description { get; set; }
+    public DateTime? BirthDate { get; set; }
+    public string? Location { get; set; }
+    public string? Url { get; set; }
     public DateTime MemberSince { get; }
     public TweetId? PinnedTweetId { get; private set; }
     

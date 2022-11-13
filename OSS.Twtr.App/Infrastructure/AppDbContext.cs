@@ -53,7 +53,7 @@ public sealed class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<Author>(b =>
+        modelBuilder.Entity<User>(b =>
         {
             b.HasKey(u => u.Id);
             b.Property(u => u.Id)
@@ -61,14 +61,19 @@ public sealed class AppDbContext : DbContext
 
             b.Property(t => t.UserName).IsRequired();
             b.Property(t => t.DisplayName);
-            b.Property(t => t.Email);
             b.Property(t => t.MemberSince).IsRequired();
+            b.Property<string>("Email");
+            b.Property(t => t.Job);
+            b.Property(t => t.Description);
+            b.Property(t => t.BirthDate);
+            b.Property(t => t.Url);
+            b.Property(t => t.Location);
             b.Property(t => t.PinnedTweetId)
                 .HasConversion(
                     id => id != null ? id.Value : (Guid?) null, 
                     guid => guid != null ? TweetId.From(guid.Value) : null);
 
-            b.HasOne<Tweet>().WithOne().HasForeignKey<Author>(c => c.PinnedTweetId);
+            b.HasOne<Tweet>().WithOne().HasForeignKey<User>(c => c.PinnedTweetId);
 
             b.Ignore(c => c.DomainEvents);
             b.Property<byte[]>("RowVersion").IsRowVersion();
@@ -98,7 +103,7 @@ public sealed class AppDbContext : DbContext
                     id => id != null ? id.Value : (Guid?) null, 
                     guid => guid != null ? TweetId.From(guid.Value) : null);
 
-            b.HasOne<Author>()
+            b.HasOne<User>()
                 .WithMany()
                 .HasForeignKey(c => c.AuthorId)
                 .OnDelete(DeleteBehavior.Cascade)
@@ -142,7 +147,7 @@ public sealed class AppDbContext : DbContext
             b.Property(c => c.LikedOn);
             b.HasKey(c => new {c.UserId, c.TweetId});
 
-            b.HasOne<Author>().WithMany()
+            b.HasOne<User>().WithMany()
                 .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
@@ -165,7 +170,7 @@ public sealed class AppDbContext : DbContext
             b.Property(c => c.BookmarkedOn);
             b.HasKey(c => new {c.UserId, c.TweetId});
 
-            b.HasOne<Author>().WithMany()
+            b.HasOne<User>().WithMany()
                 .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
@@ -188,11 +193,11 @@ public sealed class AppDbContext : DbContext
             b.Property(c => c.BlockedOn);
             b.HasKey(c => new {c.UserId, c.UserIdToBlock});
 
-            b.HasOne<Author>().WithMany()
+            b.HasOne<User>().WithMany()
                 .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            b.HasOne<Author>().WithMany()
+            b.HasOne<User>().WithMany()
                 .HasForeignKey(c => c.UserIdToBlock)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -211,11 +216,11 @@ public sealed class AppDbContext : DbContext
             b.Property(c => c.MutedOn);
             b.HasKey(c => new {c.UserId, c.UserIdToMute});
 
-            b.HasOne<Author>().WithMany()
+            b.HasOne<User>().WithMany()
                 .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            b.HasOne<Author>().WithMany()
+            b.HasOne<User>().WithMany()
                 .HasForeignKey(c => c.UserIdToMute)
                 .OnDelete(DeleteBehavior.Cascade);
 

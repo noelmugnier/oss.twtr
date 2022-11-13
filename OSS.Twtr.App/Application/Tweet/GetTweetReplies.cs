@@ -42,7 +42,7 @@ internal sealed class GetTweetRepliesHandler : IQueryHandler<GetTweetRepliesQuer
             if (request.UserId.HasValue)
                 tweetQuery =
                     from c in _db.Set<ReadOnlyTweet>()
-                    join a in _db.Set<ReadOnlyAuthor>() on c.AuthorId equals a.Id
+                    join a in _db.Set<ReadOnlyUser>() on c.AuthorId equals a.Id
                     from l in _db.Set<ReadOnlyLike>()
                         .LeftJoin(s => s.UserId == request.UserId.Value && s.TweetId == c.Id)
                     from r in _db.Set<ReadOnlyTweet>()
@@ -60,7 +60,7 @@ internal sealed class GetTweetRepliesHandler : IQueryHandler<GetTweetRepliesQuer
             else
                 tweetQuery =
                     from c in _db.Set<ReadOnlyTweet>()
-                    join a in _db.Set<ReadOnlyAuthor>() on c.AuthorId equals a.Id
+                    join a in _db.Set<ReadOnlyUser>() on c.AuthorId equals a.Id
                     where c.ReferenceTweetId == request.TweetId
                     orderby c.PostedOn
                     select new TweetDto(c.Id, c.Kind, c.Message, c.PostedOn, new AuthorDto(c.Author.Id, c.Author

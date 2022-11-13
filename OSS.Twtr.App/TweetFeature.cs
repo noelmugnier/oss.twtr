@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using OpenAI.GPT3;
+using OpenAI.GPT3.Extensions;
+using OpenAI.GPT3.Managers;
 using OSS.Twtr.App.Application;
-using OSS.Twtr.App.Domain.Repositories;
 using OSS.Twtr.App.Infrastructure;
-using OSS.Twtr.Application;
 using OSS.Twtr.Infrastructure;
 
 namespace OSS.Twtr.App;
@@ -24,6 +25,7 @@ public class TweetFeature : IFeature
 
         services.AddScoped<ITweetTokenizer, TweetTokenizer>();
         services.AddScoped<IContinuationTokenManager, ContinuationTokenManager>();
+        services.AddOpenAIService(settings => { settings.ApiKey = configuration.GetSection("OpenAI")["ApiKey"]; });
 
         return services;
     }

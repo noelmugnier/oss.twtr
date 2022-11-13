@@ -22,7 +22,7 @@ public class Tweet : Aggregate<TweetId>
         ReferenceTweetId = referenceTweetId;
         ThreadId = threadId;
 
-        if(threadId == null)
+        if(kind != TweetKind.Reply)
             RaiseEvent(new TweetPosted(Id.Value, authorId.Value));
     }
 
@@ -56,11 +56,8 @@ public class Tweet : Aggregate<TweetId>
         RaiseEvent(new TweetRemoved(Id.Value, AuthorId.Value));
     }
 
-    public static Tweet Create(ThreadId threadId, string message, UserId authorId, TweetAllowedReplies allowedReplies)
-    {
-        var tweet = new Tweet(TweetKind.Tweet, message, allowedReplies, authorId, null, threadId);
-        return tweet;
-    }
+    public static Tweet Create(ThreadId threadId, string message, UserId authorId, TweetAllowedReplies allowedReplies)=> new(TweetKind
+        .Tweet, message, allowedReplies, authorId, null, threadId);
 
     public int LikesCount { get; set; }
     public int RetweetsCount { get; set; }

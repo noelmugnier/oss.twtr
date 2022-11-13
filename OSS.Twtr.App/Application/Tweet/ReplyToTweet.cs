@@ -59,7 +59,7 @@ internal sealed class ReplyToTweetHandler : ICommandHandler<ReplyToTweetCommand,
 
     private async Task<Result<Unit>> CheckIfReplierIsMentionedInTweet(UserId replierId, Tweet tweet, CancellationToken token)
     {
-        var username = await _repository.Set<Author>()
+        var username = await _repository.Set<User>()
             .Where(a => a.Id == replierId)
             .Select(a => a.UserName)
             .SingleAsync(token);

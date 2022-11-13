@@ -14,14 +14,18 @@ internal sealed class ReadDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<ReadOnlyAuthor>(b =>
+        modelBuilder.Entity<ReadOnlyUser>(b =>
         {
             b.HasKey(u => u.Id);
 
             b.Property(c => c.MemberSince);
             b.Property(c => c.UserName);
             b.Property(c => c.DisplayName);
-            b.Property(c => c.Email);
+            b.Property(t => t.Job);
+            b.Property(t => t.Description);
+            b.Property(t => t.BirthDate);
+            b.Property(t => t.Url);
+            b.Property(t => t.Location);
             
             b.ToTable("Users");
         });
@@ -98,13 +102,17 @@ internal sealed class ReadDbContext : DbContext
     }
 }
 
-public record ReadOnlyAuthor
+public record ReadOnlyUser
 {
     public Guid Id { get; }
     public string UserName { get; }
     public string? DisplayName { get; }
-    public string? Email { get; }
     public DateTime MemberSince { get; }
+    public string? Job { get; }
+    public string? Description { get; }
+    public DateTime? BirthDate { get; }
+    public string? Location { get; }
+    public string? Url { get; }
 }
 
 public record ReadOnlySubscription
@@ -120,7 +128,7 @@ public record ReadOnlyTweet
     public string? Message { get; }
     public DateTime PostedOn { get; }
     public Guid AuthorId { get; }
-    public ReadOnlyAuthor Author { get; }
+    public ReadOnlyUser Author { get; }
     public Guid? ReferenceTweetId { get; }
     public Guid? ThreadId { get; }
     public ReadOnlyTweet? ReferenceTweet { get; }

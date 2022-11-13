@@ -30,7 +30,7 @@ internal sealed class PinTweetHandler : ICommandHandler<PinTweetCommand, Result<
 
     public async Task<Result<Unit>> Handle(PinTweetCommand request, CancellationToken ct)
     {
-        var author = await _repository.Set<Author>()
+        var author = await _repository.Set<User>()
             .SingleAsync(c => c.Id == UserId.From(request.UserId), ct);
         
         author.PinTweet(TweetId.From(request.TweetId));
