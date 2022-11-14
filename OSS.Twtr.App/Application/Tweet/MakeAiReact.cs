@@ -43,20 +43,31 @@ internal sealed class MakeAiReactHandler : ICommandHandler<MakeAiReactCommand, R
         var sentimentResult = await _openAiClient.Completions.CreateCompletion(
             new CompletionCreateRequest
             {
-                Prompt =
-                    $"Decide whether a Tweet's sentiment is positive, neutral or negative\n\nTweet: {tweet.Message}\nSentiment:",
+                Prompt = $"Decide whether a Tweet's sentiment is positive, neutral or negative\n\nTweet: {tweet.Message}\n\nSentiment:",
                 MaxTokens = 5,
-                Stop = "Sentiment:"
-            }, Models.TextCurieV1);
+                Stop = "Tweet:,Sentiment:"
+            }, Models.TextBabbageV1);
 
+        var sentiment = sentimentResult.Choices.First().Text.Trim().ToLowerInvariant();
         var results = await _openAiClient.Completions.CreateCompletion(new CompletionCreateRequest
         {
-            Prompt = tweet.Message,
+            Prompt = $"The following is a conversation with an AI. The AI answers are tainted with {sentiment} sentiment.\n\nHuman: {tweet.Message}\n\nAI:",
             MaxTokens = 50,
+            Stop = "Human:,AI:"
         }, Models.TextDavinciV2);
 
+        var userIdToReply = GetAiUserIdToReply(sentiment);
+
+        var reply = tweet.Reply(results.Choices.First().Text.Trim(), userIdToReply);
+        await _repository.AddAsync(reply, ct);
+        await _repository.SaveChangesAsync(ct);
+        
+        return new Result<Unit>(Unit.Value);
+    }
+
+    private static UserId GetAiUserIdToReply(string sentiment)
+    {
         var userIdToReply = UserId.None;
-        var sentiment = sentimentResult.Choices.First().Text.Trim().ToLowerInvariant();
         switch (sentiment)
         {
             case "positive":
@@ -70,11 +81,7 @@ internal sealed class MakeAiReactHandler : ICommandHandler<MakeAiReactCommand, R
                 break;
         }
 
-        var reply = tweet.Reply(results.Choices.First().Text.Trim(), userIdToReply);
-        await _repository.AddAsync(reply, ct);
-        await _repository.SaveChangesAsync(ct);
-        
-        return new Result<Unit>(Unit.Value);
+        return userIdToReply;
     }
 }
 
