@@ -25,6 +25,7 @@ public class TweetFeature : IFeature
 
         services.AddScoped<ITweetTokenizer, TweetTokenizer>();
         services.AddScoped<IContinuationTokenManager, ContinuationTokenManager>();
+        services.AddScoped<IOpenAIGenerator, OpenAIGenerator>();
         services.AddOpenAIService(settings => { settings.ApiKey = configuration.GetSection("OpenAI")["ApiKey"]; });
 
         return services;

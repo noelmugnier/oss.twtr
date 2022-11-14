@@ -33,7 +33,7 @@ public class Tweet : Aggregate<TweetId>
     public Tweet Reply(string message, UserId authorId)
     {
         var reply = new Tweet(TweetKind.Reply, message, TweetAllowedReplies.All, authorId, Id);
-        RaiseEvent(new TweetReplied(Id.Value, authorId.Value));
+        RaiseEvent(new TweetReplied(Id.Value,  reply.Id.Value, authorId.Value));
         return reply;
     }
 
