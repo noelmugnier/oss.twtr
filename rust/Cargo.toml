@@ -1,0 +1,15 @@
+[package]
+name = "twitust"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-web = {version= "4.*", features = ["rustls"] }
+serde = { version = "1.*", features = ["derive"] }
+diesel = { version = "2.*", features = ["postgres"] }
+jsonwebtoken = {version= "8.*" }
+pbkdf2 = {version="0.*" }
+rand_core = { version = "0.*", features = ["std"] }
+cookie = { version = "0.*", features = ["secure"] }

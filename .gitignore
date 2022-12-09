@@ -1,8 +1,9 @@
-bin/
-obj/
-/packages/
-riderModule.iml
-/_ReSharper.Caches/
+**/bin/
+**/obj/
+**/packages/
 .fleet
 .idea
+.vs
 *.db
+**/target/
+dotnet/OSS.Twtr.Api/appsettings.Development.json

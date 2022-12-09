@@ -1,0 +1,6 @@
+CREATE TABLE accounts (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(100) NOT NULL,
+  password_hash VARCHAR NOT NULL,
+  salt VARCHAR(250) NOT NULL
+);
