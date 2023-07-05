@@ -170,6 +170,7 @@ public sealed class AppDbContext : DbContext
                 .HasForeignKey<ProfilePicture>(c => c.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
             
+            b.HasNoKey();
             b.ToTable("ProfilePictures");
         });
 

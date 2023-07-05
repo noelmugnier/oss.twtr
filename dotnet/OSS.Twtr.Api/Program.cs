@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using Hangfire;
+using Hangfire.PostgreSql;
 using LinqToDB.EntityFrameworkCore;
 using Newtonsoft.Json;
 using OSS.Twtr;
@@ -23,7 +24,7 @@ builder.Services.AddSwaggerDoc(shortSchemaNames: true);
 
 builder.Services.AddHangfire(configuration =>
 {
-    configuration.UseSqlServerStorage(builder.Configuration.GetConnectionString("Data"));
+    configuration.UsePostgreSqlStorage(builder.Configuration.GetConnectionString("Data"));
     configuration.UseSerializerSettings(new JsonSerializerSettings
     {
         TypeNameHandling = TypeNameHandling.All

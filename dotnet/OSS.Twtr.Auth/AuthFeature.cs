@@ -20,7 +20,7 @@ public class AuthFeature : IFeature
     public IServiceCollection Configure(IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<AuthDbContext>(c => 
-            c.UseSqlServer(configuration.GetConnectionString("Data"), 
+            c.UseNpgsql(configuration.GetConnectionString("Data"), 
                 options => options.MigrationsAssembly(typeof(AuthFeature).Assembly.FullName)));
 
         services.AddScoped<IUserManager, ApplicationUserManager>();

@@ -17,11 +17,11 @@ public class TweetFeature : IFeature
     public IServiceCollection Configure(IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<AppDbContext>(c => 
-            c.UseSqlServer(configuration.GetConnectionString("Data"), 
+            c.UseNpgsql(configuration.GetConnectionString("Data"), 
                 options => options.MigrationsAssembly(typeof(TweetFeature).Assembly.FullName)));
         
         services.AddDbContext<ReadDbContext>(c => 
-            c.UseSqlServer(configuration.GetConnectionString("Data")));
+            c.UseNpgsql(configuration.GetConnectionString("Data")));
 
         services.AddScoped<ITweetTokenizer, TweetTokenizer>();
         services.AddScoped<IContinuationTokenManager, ContinuationTokenManager>();

@@ -10,7 +10,7 @@
     <PackageReference Include="FastEndpoints.Swagger" Version="5.1.0" />
     <PackageReference Include="FastEndpoints" Version="5.1.0" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.31" />
-    <PackageReference Include="Hangfire.SqlServer" Version="1.7.31" />
+    <PackageReference Include="Hangfire.PostgreSql" Version="1.7.31" />
     <PackageReference Include="Mapster" Version="7.3.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.10">
       <PrivateAssets>all</PrivateAssets>
